@@ -891,7 +891,8 @@ class Common extends CI_Controller
 	/**
 	 * 获取模型缓存(非会员模型)
 	 */
-	protected function get_model($name = 'content', $site = 0) {
+	protected function get_model($name = 'content', $site = 0)
+    {
 		return get_model_data($name, $site);
 	}
 	

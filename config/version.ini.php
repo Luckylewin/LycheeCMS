@@ -1,10 +1,10 @@
 <?php
 return array(
 
-	'cms' => 'FineCMS',
-	'name' => 'FineCMS公益版',
-    'company' => '罗氏工作室',
+	'cms' => 'LycheeCMS',
+	'name' => 'LycheeCMS',
+    'company' => '诗意的边缘',
 	'version' => '2.2.0',
-	'update' => '2017-3-23',
+	'update' => '2017-12-26',
 
 );

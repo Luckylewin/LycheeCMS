@@ -186,7 +186,8 @@ function get_category_data($site = 0) {
 /**
  * 读取模型缓存数据(非会员)
  */
-function get_model_data($name = 'content', $site = 0) {
+function get_model_data($name = 'content', $site = 0)
+{
 	$cache = new cache_file();
 	$site = empty($site) ? App::get_site_id() : $site;
 	$data = $cache->get('model_' . $name . '_' . $site);
