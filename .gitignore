@@ -1,4 +1,7 @@
-cache/
+cache/data/
+cache/models/
+cache/views
+install.lock
 config/
-models/callback/
+*.cache.php
 .idea
