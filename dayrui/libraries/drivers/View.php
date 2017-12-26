@@ -6,19 +6,24 @@
 
 if (!defined('IN_FINECMS')) exit();
 
-class View {
+class View
+{
 
     public $ci;
 	public $theme;
-	public $viewpath;
+	public $viewPath;
 	public $view_dir;
 	public $compile_dir;
 	public $_options = array();
 	public $left_delimiter  = '{';
 	public $right_delimiter = '}';
 	protected static $_instance;
-	
-	public function __construct() {
+
+    /**
+     * View constructor.
+     */
+	public function __construct()
+    {
         $this->_options['ci'] = $this->ci = &get_instance();
         $this->theme = APP::get_namespace_id() == 'admin' ? false : true;
 		if (APP_DIR && is_dir(FCPATH.'plugins/'.APP_DIR.'/') && $this->ci->controller == 'admin') {
@@ -27,24 +32,33 @@ class View {
 		}
 	}
 
-	/**
-	 * 获取视图文件的路径
-	 */
-	protected function get_view_file($file_name) {
+    /**
+     * 获取视图文件的路径
+     * @param $file_name
+     * @return string
+     */
+	protected function get_view_file($file_name)
+    {
 		return $this->view_dir . $file_name . ((substr($file_name, strrpos($file_name, '.')) == '.html') ? '' : '.html');
 	}
 
-	/**
-	 * 获取视图编译文件的路径
-	 */
-	protected function get_compile_file($file_name) {
+    /**
+     * 获取视图编译文件的路径
+     * @param $file_name
+     * @return string
+     */
+	protected function get_compile_file($file_name)
+    {
 		return $this->compile_dir . md5($file_name). APP_DIR . '.cache.php';
 	}
 
-	/**
-	 * 生成视图编译文件
-	 */
-	protected function create_compile_file($compile_file, $content) {
+    /**
+     * 生成视图编译文件
+     * @param $compile_file
+     * @param $content
+     */
+	protected function create_compile_file($compile_file, $content)
+    {
 		$compile_dir = dirname($compile_file);
 		if (!is_dir($compile_dir)) {
 			mkdir($compile_dir) or App::display_error(lang('app-9', array('1' => $compile_dir)));
@@ -58,17 +72,25 @@ class View {
 		file_put_contents($compile_file, $content, LOCK_EX) or App::display_error(lang('app-9', array('1' => $compile_dir)));
 	}
 
-	/**
-	 * 缓存重写分析
-	 */
-	protected function is_compile($view_file, $compile_file) {
+    /**
+     * 缓存重写分析
+     * @param $view_file
+     * @param $compile_file
+     * @return bool
+     */
+	protected function is_compile($view_file, $compile_file)
+    {
 		return (is_file($compile_file) && is_file($view_file) && (filemtime($compile_file) >= filemtime($view_file))) ? false : true;
 	}
 
-	/**
-	 * 设置视图变量
-	 */
-	public function assign($key, $value = null) {
+    /**
+     * 设置视图变量
+     * @param $key
+     * @param null $value
+     * @return bool
+     */
+	public function assign($key, $value = null)
+    {
 		if(!$key) return false;
 		if(is_array($key)) {
 			foreach ($key as $k => $v) {
@@ -80,17 +102,23 @@ class View {
 		return true;
 	}
 
-	/**
-	 * 分析视图文件名
-	 */
-	protected function parse_file_name($file_name = null) {
+    /**
+     * 分析视图文件名
+     * @param null $file_name
+     * @return null|string
+     */
+	protected function parse_file_name($file_name = null)
+    {
 		return $this->theme ? SYS_THEME_DIR . $file_name : $file_name;
 	}
 
-	/**
-	 * 加载视图文件
-	 */
-	protected function load_view_file($view_file) {
+    /**
+     * 加载视图文件
+     * @param $view_file
+     * @return bool|mixed
+     */
+	protected function load_view_file($view_file)
+    {
 		if (!is_file($view_file)) {
             App::display_error(lang('app-8') . ': ' . $view_file);
         }
@@ -98,10 +126,13 @@ class View {
 		return $this->handle_view_file($view_content);
 	}
 
-	/**
-	 * 编译视图标签
-	 */
-	protected function handle_view_file($view_content) {
+    /**
+     * 编译视图标签
+     * @param $view_content
+     * @return bool|mixed
+     */
+	protected function handle_view_file($view_content)
+    {
 		if (!$view_content) return false;
 		//正则表达式匹配的模板标签
 		$regex_array = array(
@@ -195,17 +226,25 @@ class View {
 		return preg_replace($regex_array, $replace_array, $view_content);
 	}
 
-	/**
-	 * 模型加载
-	 */
-	private function load_model($name) {
+    /**
+     * 模型加载
+     * @param $name
+     * @return bool|mixed
+     */
+	private function load_model($name)
+    {
 		if ($name == 'content') {
 			$name = 'content_' . App::get_site_id();
 		}
 		return Controller::model($name);
 	}
 
-    protected function _sqldata($param) {
+    /**
+     * @param $param
+     * @return array
+     */
+    protected function _sqldata($param)
+    {
 
         $ci = &get_instance();
         $rt = $ci->db->query($param)->result_array();
@@ -216,10 +255,13 @@ class View {
         );
     }
 
-	/**
-	 * 解析标签list
-	 */
-	protected function _listdata($param) {
+    /**
+     * 解析标签list
+     * @param $param
+     * @return array
+     */
+	protected function _listdata($param)
+    {
 	    $_param = explode(' ', $param);
 		$param = array();
 		foreach ($_param as $p) {
@@ -689,8 +731,13 @@ class View {
 
     /**
      * 相关文章列表
+     * @param $id
+     * @param int $num
+     * @param int $more
+     * @return bool|null
      */
-    protected function relation($id, $num = 10, $more = 0) {
+    protected function relation($id, $num = 10, $more = 0)
+    {
 		if (empty($id)) {
             return false;
         }
@@ -716,10 +763,13 @@ class View {
 	    return $data;
 	}
 
-   /**
-	 * 加载include视图
-	 */
-	protected function _include($file_name) {
+    /**
+     * 加载include视图
+     * @param $file_name
+     * @return bool|string
+     */
+	protected function _include($file_name)
+    {
 		if (!$file_name) {
             return false;
         }
@@ -733,34 +783,35 @@ class View {
 		return $compile_file;
 	}
 
-	/**
-	 * 显示视图文件
-	 */
-	public function display($file_name = null) {
-
-		//$file_name = str_replace('..','', $file_name);
-
+    /**
+     * 显示视图文件
+     * @param null $file_name
+     */
+	public function display($file_name = null)
+    {
+        //判断是否为插件视图
         if (strpos($file_name, '.html') && APP_DIR) {
-            $viewpath = 'plugins/'.APP_DIR.'/templates/admin/';
-            $this->view_dir = FCPATH.$viewpath;
-            $this->viewpath = $viewpath;
+            $viewPath = 'plugins/'.APP_DIR.'/templates/admin/';
+            $this->view_dir = FCPATH . $viewPath;
+            $this->viewPath = $viewPath;
         } else {
-            $viewpath = basename(VIEW_DIR) . '/';
+            $viewPath = basename(VIEW_DIR) . '/';
             $this->view_dir = VIEW_DIR;
-            $this->viewpath = $viewpath;
+            $this->viewPath = $viewPath;
         }
-		
-		
+
 		if (!$this->theme && strpos($file_name, '../') !== false) {
 			$this->theme = true;
 		}
 
+		//视图模板编译文件
         $this->compile_dir = APP_ROOT.'cache/views/';
-        $this->_options['viewpath'] = $viewpath;
+        $this->_options['viewPath'] = $viewPath;
         extract($this->_options, EXTR_PREFIX_SAME, 'data');
 
 		$file_name = $this->parse_file_name($file_name);
 		$view_file = $this->get_view_file($file_name);
+
 		$compile_file = $this->get_compile_file($file_name);
 		if ($this->is_compile($view_file, $compile_file)) {
 			$view_content = $this->load_view_file($view_file);
@@ -775,11 +826,13 @@ class View {
             echo $this->ci->profiler->run();
         }
 	}
-	
-	/**
-	 * 设置风格
-	 */
-	public function setTheme($theme) {
+
+    /**
+     * 设置风格
+     * @param $theme
+     */
+	public function setTheme($theme)
+    {
 	    $this->theme = $theme;
 	}
 	
@@ -793,7 +846,8 @@ class View {
 	/**
 	 * 单件模式调用方法
 	 */
- 	public static function getInstance(){
+ 	public static function getInstance()
+    {
  		if (!self::$_instance instanceof self) {
  			self::$_instance = new self();
  		}

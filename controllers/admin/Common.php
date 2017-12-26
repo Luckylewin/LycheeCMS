@@ -1,22 +1,18 @@
 <?php
 
-class Admin extends Common {
+class Admin extends Common
+{
 	
 	protected $user;
 	protected $roleid;
 	protected $userinfo;
 	protected $site_url;
 
-	public function __construct() {
+	public function __construct()
+    {
 		parent::__construct();
         define('IS_FC_ADMIN', intval(SYS_MODE));
-        if (SYS_MODE == 1) {
-            // 中级
-        } elseif (SYS_MODE == 2) {
-            // 高级
-        } else {
-            // 初级
-        }
+
 		$this->user = $this->model('user');
 		$this->isAdminLogin();
         !auth::check($this->roleid, $this->controller . '-' . $this->action, $this->namespace)

@@ -1,34 +1,39 @@
 <?php
 
-class IndexController extends Admin {
+class IndexController extends Admin
+{
 
-    public function __construct() {
+    public function __construct()
+    {
 		parent::__construct();
 	}
 	
 	/**
 	 * 首页
 	 */
-	public function indexAction() {
-        $this->view->assign('cat', $this->get_category());
-	    $this->view->assign('menu', $this->optionMenu());
-        $this->view->display('admin/index');
+	public function indexAction()
+    {
+        return $this->render([
+            'cat' => $this->get_category(),
+            'menu' => $this->optionMenu()
+        ]);
 	}
-	
+
 	/**
 	 * 后台首页
 	 */
-	public function mainAction() {
-	    $this->view->assign(array(
-			'model'  => $this->get_model(),
-		));
-	    $this->view->display('admin/main');
+	public function mainAction()
+    {
+	   return $this->render([
+	       'model' => $this->get_model()
+       ]);
 	}
 	
 	/**
 	 * 系统配置
 	 */
-	public function configAction() {
+	public function configAction()
+    {
         //变量注释
 	    $string = array(
             'ADMIN_NAMESPACE'         => lang('a-cfg-8'),
@@ -87,6 +92,7 @@ class IndexController extends Admin {
 			'SITE_BDPING'              => '百度Ping推送',
 
         );
+
 	    //加载应用程序配置文件.
 	    $config = self::load_config('config');
         $chunk = array_chunk($string, 10, true);
@@ -130,18 +136,19 @@ class IndexController extends Admin {
             file_put_contents(CONFIG_DIR . 'config.ini.php', $content);
             $this->adminMsg(lang('success'), purl('index/config', array('type' => $this->get('type'))), 3, 1, 1);
         }
-        $this->view->assign(array(
+
+        return $this->render(array(
             'data'   => $config,
-			'type'   => $this->get('type') ? $this->get('type') : 1,
+            'type'   => $this->get('type') ? $this->get('type') : 1,
             'string' => $string,
         ));
-        $this->view->display('admin/config');
 	}
 	
 	/**
 	 * 全站缓存
 	 */
-	public function cacheAction() {
+	public function cacheAction()
+    {
 	    $caches = array(
 	        array('20',  'plugin',      'cache'),
 			array('21',  'auth',        'cache'),
@@ -200,28 +207,29 @@ class IndexController extends Admin {
             $this->load->helper('file');
             delete_files(FCPATH.'cache/models/');
             delete_files(FCPATH.'cache/views/');
-	    } else {
-            $this->view->assign('caches', $caches);
-	        $this->view->display('admin/cache');
+            return true;
 	    }
+
+	    return $this->render(['caches' => $caches]);
 	}
 	
 	/**
 	 * 后台日志
 	 */
-	public function logAction() {
+	public function logAction()
+    {
 	    $page = (int)$this->get('page') ? (int)$this->get('page') : 1;
 	    $pagelist = $this->instance('pagelist');
 		$pagelist->loadconfig();
-	    $logsdir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
-		$filedata = file_list::get_file_list($logsdir);
+	    $logsDir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
+		$fileData = file_list::get_file_list($logsDir);
 		$data = array();
 		$username = $this->post('submit') ? $this->post('kw') : $this->get('username');
-		if ($filedata) {
-		    $filedata      = array_reverse($filedata);
-			foreach ($filedata as $file) {
+		if ($fileData) {
+		    $fileData      = array_reverse($fileData);
+			foreach ($fileData as $file) {
 				if (substr($file, -4) == '.log') {
-					$fdata = file_get_contents($logsdir . $file);
+					$fdata = file_get_contents($logsDir . $file);
 					$fdata = explode(PHP_EOL, $fdata);
 					foreach ($fdata as $v) {
 						$t = unserialize($v);
@@ -236,28 +244,30 @@ class IndexController extends Admin {
 				}
 			}
 		}
+
 		$total = count($data);
-		$pagesize = isset($this->site['SITE_ADMIN_PAGESIZE']) && $this->site['SITE_ADMIN_PAGESIZE'] ? $this->site['SITE_ADMIN_PAGESIZE'] : 8;
+		$pageSize = isset($this->site['SITE_ADMIN_PAGESIZE']) && $this->site['SITE_ADMIN_PAGESIZE'] ? $this->site['SITE_ADMIN_PAGESIZE'] : 8;
 		$list = array();
-		$count_pg = ceil($total/$pagesize);
-        $offset   = ($page - 1) * $pagesize;		
+        $offset   = ($page - 1) * $pageSize;
 		foreach ($data as $i => $t) {
-		    if ($i >= $offset && $i < $offset + $pagesize) $list[] = $t;
+		    if ($i >= $offset && $i < $offset + $pageSize) $list[] = $t;
 		}
-		$pagelist = $pagelist->total($total)->url(purl('index/log', array('page' => '{page}', 'username' => $username)))->num($pagesize)->page($page)->output();
-		$this->view->assign(array(
-	        'list'     => $list,
-	        'pagelist' => $pagelist
-	    ));
-	    $this->view->display('admin/log');
+		$pagelist = $pagelist->total($total)->url(purl('index/log', array('page' => '{page}', 'username' => $username)))->num($pageSize)->page($page)->output();
+
+		return $this->render(array(
+            'list'     => $list,
+            'pagelist' => $pagelist
+        ));
 	}
 	
 	/**
 	 * 修改版权
 	 */
-	public function bqAction() {
+	public function bqAction()
+    {
         $file = FCPATH.'config/version.ini.php';
         $data = require $file;
+
         if (IS_POST) {
             $post = $this->input->post('data', true);
             $version = "<?php
@@ -274,14 +284,15 @@ return array(
             file_put_contents($file, $version);
             $this->adminMsg(lang('success'), url('admin/index/bq'), 3, 1, 1);
         }
-        $this->view->assign('data', $data);
-        $this->view->display('admin/bq');
+
+        return $this->render(['data' => $data]);
     }
 
 	/**
 	 * 攻击日志
 	 */
-	public function attackAction() {
+	public function attackAction()
+    {
 	    $page     = (int)$this->get('page') ? (int)$this->get('page') : 1;
 	    $pagelist = $this->instance('pagelist');
 		$pagelist->loadconfig();
@@ -311,24 +322,25 @@ return array(
 		$total    = count($data);
 		$pagesize = isset($this->site['SITE_ADMIN_PAGESIZE']) && $this->site['SITE_ADMIN_PAGESIZE'] ? $this->site['SITE_ADMIN_PAGESIZE'] : 8;
 		$list     = array();
-		$count_pg = ceil($total/$pagesize);
+
         $offset   = ($page - 1) * $pagesize;		
 		foreach ($data as $i => $t) {
 		    if ($i >= $offset && $i < $offset + $pagesize) $list[] = $t;
 		}
 		$pagelist = $pagelist->total($total)->url(purl('index/attack', array('page' => '{page}', 'ip' => $ip)))->num($pagesize)->page($page)->output();
-		$this->view->assign(array(
-			'ip'       => $this->cache->get('ip'),
-	        'list'     => $list,
-	        'pagelist' => $pagelist
-	    ));
-	    $this->view->display('admin/attacklog');
+
+		return $this->render(array(
+            'ip'       => $this->cache->get('ip'),
+            'list'     => $list,
+            'pagelist' => $pagelist
+        ));
 	}
 	
 	/**
 	 * 清除日志
 	 */
-	public function clearlogAction() {
+	public function clearlogAction()
+    {
 	    $time     = strtotime('-30 day');
 	    $logsdir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
 		$filedata = file_list::get_file_list($logsdir);
@@ -350,7 +362,8 @@ return array(
 	/**
 	 * 清除攻击日志
 	 */
-	public function clearattackAction() {
+	public function clearattackAction()
+    {
 	    $time     = strtotime('-30 day');
 	    $logsdir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'attack' . DIRECTORY_SEPARATOR;
 		$filedata = file_list::get_file_list($logsdir);
@@ -372,7 +385,8 @@ return array(
 	/**
 	 * 验证Email
 	 */
-	public function ajaxmailAction() {
+	public function ajaxmailAction()
+    {
 	    if ($this->get('submit')) {
 	        $toemail = $this->get('mail_to');
 	        if (empty($toemail)) exit(lang('a-ind-33'));
@@ -399,7 +413,8 @@ return array(
 	/**
 	 * 更新地图
 	 */
-	public function updatemapAction() {
+	public function updatemapAction()
+    {
 	    $fp = @fopen(APP_ROOT . 'finecms_test.txt', 'wb');
 		if (!file_exists(APP_ROOT . 'finecms_test.txt') || $fp === false) $this->adminMsg(lang('app-9', array('1' => APP_ROOT)));
 		@fclose($fp);
@@ -411,7 +426,8 @@ return array(
 	/**
 	 * 更新指定缓存
 	 */
-	public function updatecacheAction() {
+	public function updatecacheAction()
+    {
 	    $a = $this->get('ca') ? $this->get('ca') : 'cache';
 	    $c = $this->get('cc');
         Controller::redirect(url('admin/'.$c.'/'.$a).'&cache=1');
@@ -420,7 +436,8 @@ return array(
 	/**
 	 * 数据统计
 	 */
-	public function ajaxcountAction() {
+	public function ajaxcountAction()
+    {
 		if ($this->get('type') == 'member') {
 		    $c1 = $this->content->count('member', 'id', null);
 			$c2 = $this->content->count('member', 'id', 'status=0');
@@ -445,7 +462,8 @@ return array(
 	/**
 	 * 空格填补
 	 */
-	private function setspace($var) {
+	private function setspace($var)
+    {
 	    $len = strlen($var) + 2;
 	    $cha = 25 - $len;
 	    $str = '';

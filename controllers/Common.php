@@ -7,9 +7,12 @@
 
 if (!defined('IN_FINECMS')) exit();
 
-class Common extends CI_Controller {
+class Common extends CI_Controller
+{
 
     public $cache;
+    public $view;
+    public $input;
     public $siteid;
     public $action;
 	public $session;
@@ -33,7 +36,8 @@ class Common extends CI_Controller {
     public $_options;
     public $template;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         !file_exists(APP_ROOT.'./cache/install.lock') && $this->redirect(url('install/'));
@@ -52,8 +56,9 @@ class Common extends CI_Controller {
         App::$plugin = APP_DIR;
 
         $this->_init();
-
-		$this->load->model('category');
+        $this->view = new View();
+        $this->template = $this->view;
+        $this->load->model('category');
 		$this->cats = $this->get_category();
 		$this->cats_dir = $this->get_category_dir();
 
@@ -92,7 +97,7 @@ class Common extends CI_Controller {
 			unset($ips, $ip);
 		}
 
-        $this->template = $this->view = new View();
+
 
 		//载入会员系统缓存
 		if (!$this->site['SYS_MEMBER'] && is_dir(CONTROLLER_DIR . 'member')) {
@@ -195,7 +200,8 @@ class Common extends CI_Controller {
     }
 
 
-    protected function is_ie()  {
+    protected function is_ie()
+    {
 
 		$b = $this->agent->browser();
 		$v = intval($this->agent->version());
@@ -1267,6 +1273,15 @@ class Common extends CI_Controller {
      */
     protected function getParam() {
         return Controller::getParam();
+    }
+
+    public function render($data, $file_name = null)
+    {
+        $this->view->assign($data);
+        if ($file_name == null) {
+            $file_name = App::$namespace . '/'. App::$controller . '/' . App::$action;
+        }
+        $this->view->display($file_name);
     }
 
 }
