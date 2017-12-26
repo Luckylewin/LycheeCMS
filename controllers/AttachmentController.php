@@ -4,7 +4,8 @@ class AttachmentController extends Common {
     
     private $dir;
     
-    public function __construct() {
+    public function __construct()
+    {
 		parent::__construct();
 		if (!in_array($this->action, array('ajaxswfupload', 'ueditor_upload')) &&
             (!$this->session->is_set('user_id') && !get_cookie('member_id'))
@@ -17,7 +18,8 @@ class AttachmentController extends Common {
 	/**
 	 * 目录浏览
 	 */
-	public function albumAction() {
+	public function albumAction()
+    {
 		$admin = $this->get('admin');
 		if (empty($admin) && $this->memberinfo) {
 			$this->dir.= 'member/' . $this->memberinfo['id'] . '/';
@@ -82,7 +84,8 @@ class AttachmentController extends Common {
     /**
 	 * 上传图片(单)
 	 */
-	public function imageAction() {
+	public function imageAction()
+    {
 	    $this->memberCheck();
 	    if ($this->post('submit')) {
 		    $mark = $this->memberinfo ? false : true;
@@ -139,7 +142,8 @@ class AttachmentController extends Common {
     /**
      * 多文件（图片）上传
      */
-    public function filesAction() {
+    public function filesAction()
+    {
 	    $this->memberCheck();
         $setting = urldecode($this->get('setting'));
         list($type, $size) = explode('|', $setting);
@@ -152,22 +156,81 @@ class AttachmentController extends Common {
         foreach ($_type as $t) {
             $data.= '*.' . $t . ';';
         }
-        $this->view->assign(array(
+
+        return $this->render(array(
             'size' => (int)$size,
             'type' => $type,
             'data' => $data,
-			'admin' => $this->getAdmin(),
+            'admin' => $this->getAdmin(),
             'filesize' => 1024 * $size, //转换成MB
             'sessionid' => session_id(),
-			'document' => $this->get('document')
-        ));
-        $this->view->display('../admin/attachment_swfupload');
+            'document' => $this->get('document')
+        ), '../admin/attachment/files');
+
     }
-	
+
+    //多图上传 OSS
+    public function ossfilesAction()
+    {
+        return $this->render([], '../admin/attachment/ossfiles');
+    }
+
+    //OSS上传回调
+    public function osscallbackAction()
+    {
+        $gmt_iso8601 = function ($time) {
+            $dtStr = date("c", $time);
+            $mydateTime = new DateTime($dtStr);
+            $expiration = $mydateTime->format(DateTime::ISO8601);
+            $pos = strpos($expiration, '+');
+            $expiration = substr($expiration, 0, $pos);
+            return $expiration."Z";
+        };
+
+        $id= '6MKOqxGiGU4AUk44';
+        $key= 'ufu7nS8kS59awNihtjSonMETLI0KLy';
+        $host = 'http://post-test.oss-cn-hangzhou.aliyuncs.com';
+
+        $now = time();
+        $expire = 30; //设置该policy超时时间是10s. 即这个policy过了这个有效时间，将不能访问
+        $end = $now + $expire;
+        $expiration = $gmt_iso8601($end);
+
+        $dir = 'user-dir/';
+
+        //最大文件大小.用户可以自己设置
+        $condition = array(0=>'content-length-range', 1=>0, 2=>1048576000);
+        $conditions[] = $condition;
+
+        //表示用户上传的数据,必须是以$dir开始, 不然上传会失败,这一步不是必须项,只是为了安全起见,防止用户通过policy上传到别人的目录
+        $start = array(0=>'starts-with', 1=>'$key', 2=>$dir);
+        $conditions[] = $start;
+
+
+        $arr = array('expiration'=>$expiration,'conditions'=>$conditions);
+        //echo json_encode($arr);
+        //return;
+        $policy = json_encode($arr);
+        $base64_policy = base64_encode($policy);
+        $string_to_sign = $base64_policy;
+        $signature = base64_encode(hash_hmac('sha1', $string_to_sign, $key, true));
+
+        $response = array();
+        $response['accessid'] = $id;
+        $response['host'] = $host;
+        $response['policy'] = $base64_policy;
+        $response['signature'] = $signature;
+        $response['expire'] = $end;
+        //这个参数是设置用户上传指定的前缀
+        $response['dir'] = $dir;
+        exit(json_encode($response));
+    }
+
 	/**
 	 * 上传文件(单)
 	 */
-    public function fileAction() {
+    public function fileAction()
+    {
 	    $this->memberCheck();
 	    $type = urldecode($this->get('type'));
 	    $type = base64_decode($type);
@@ -276,7 +339,8 @@ class AttachmentController extends Common {
 	/**
      * Swf上传
      */
-    public function ajaxswfuploadAction() {
+    public function ajaxswfuploadAction()
+    {
         if ($this->post('submit')) {
             $_type = explode(',', $this->post('type'));
             if (empty($_type)) {
@@ -300,7 +364,8 @@ class AttachmentController extends Common {
 	/**
      * KE上传
      */
-	public function kindeditor_uploadAction() {
+	public function kindeditor_uploadAction()
+    {
 	    $this->memberCheck();
 	    //定义允许上传的文件扩展名
 		$ext = array(
@@ -331,7 +396,8 @@ class AttachmentController extends Common {
 	/**
      * KE浏览 
      */
-	public function kindeditor_managerAction() {
+	public function kindeditor_managerAction()
+    {
 		$root_url = SITE_PATH . 'uploadfiles/';
 		$root_path = APP_ROOT . 'uploadfiles/';
 		//用户目录设定
@@ -418,7 +484,8 @@ class AttachmentController extends Common {
 		}
 
 		//排序
-		function cmp_func($a, $b) {
+		function cmp_func($a, $b)
+        {
 			global $order;
 			if ($a['is_dir'] && !$b['is_dir']) {
 				return -1;
@@ -459,7 +526,8 @@ class AttachmentController extends Common {
 	/**
      * Ueditor上传
      */
-	public function ueditor_uploadAction() {
+	public function ueditor_uploadAction()
+    {
 	    $this->memberCheck();
 	    //定义允许上传的文件扩展名
 		$ext = array(
@@ -488,7 +556,8 @@ class AttachmentController extends Common {
 	/**
      * Ueditor浏览 
      */
-	public function ueditor_managerAction() {
+	public function ueditor_managerAction()
+    {
 		$path = 'uploadfiles/';
 		$admin = $this->getAdmin();
 		//用户目录设定
@@ -540,7 +609,8 @@ class AttachmentController extends Common {
 	/**
      * 会员组权限检测
      */
-	private function memberCheck() {
+	private function memberCheck()
+    {
 	    if ($this->memberinfo && !$this->session->is_set('user_id')) {
 			$group = $this->membergroup[$this->memberinfo['groupid']];
 			if (empty($group)) {
@@ -555,7 +625,8 @@ class AttachmentController extends Common {
 	/**
      * 判断是否来自后台
      */
-	private function getAdmin() {
+	private function getAdmin()
+    {
 	    if (isset($_SERVER['HTTP_REFERER'])
             && $_SERVER['HTTP_REFERER']
             && stripos($_SERVER['HTTP_REFERER'], 's=' . ADMIN_NAMESPACE) !== false) {
@@ -567,7 +638,8 @@ class AttachmentController extends Common {
 	/**
      * 消息提示
      */
-	private function attMsg($msg, $stype=null) {
+	private function attMsg($msg, $stype=null)
+    {
 	    if ($stype == 'swf') {
 		    exit('0,' . $msg);
 		} elseif ($stype == 'ke') {

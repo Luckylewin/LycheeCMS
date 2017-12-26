@@ -657,6 +657,7 @@ function content_files($name, $content = '', $field = '') {
 		<div class="bk10"></div>
         <div class="picBut cu"><a href="javascript:;" onClick="add_null_file(\'' . $name . '\')">' . lang('a-mod-127') . '</a></div>
 		<div class="picBut cu"><a href="javascript:;" onClick="uploadFiles(\'' . $name . '\',\'' . $set . '\')">' . lang('a-mod-128') . '</a></div>
+		<div class="picBut cu"><a href="javascript:;" onClick="uploadFilesOss(\'' . $name . '\',\'' . $set . '\')">' . lang('a-mod-1281') . '</a></div>
 		<div class="onShow">' . lang('a-mod-122') . '</div><script>$("#' . $name . '-sort-items").sortable();</script>';
     return $str;
 }

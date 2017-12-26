@@ -20,14 +20,16 @@
 	<div class="pad-10">
 		<div class="col-tab">
 			<ul class="tabBut cu-li">
-				<li onClick="SwapTab('setting','on','',7,1);" id="tab_setting_1" class="{if $type==1}on{/if}">{lang('a-men-65')}</li>
-				<li onClick="SwapTab('setting','on','',7,2);" id="tab_setting_2" class="{if $type==2}on{/if}">{lang('a-men-14')}</li>
-				<li onClick="SwapTab('setting','on','',7,3);" id="tab_setting_3" class="{if $type==3}on{/if}">{lang('a-men-15')}</li>
-				<li onClick="SwapTab('setting','on','',7,4);" id="tab_setting_4" class="{if $type==4}on{/if}">{lang('a-men-16')}</li>
-				<li onClick="SwapTab('setting','on','',7,5);" id="tab_setting_5" class="{if $type==5}on{/if}">{lang('a-men-17')}</li>
-				<li onClick="SwapTab('setting','on','',7,6);" id="tab_setting_6" class="{if $type==6}on{/if}">{lang('t-003')}</li>
-				<li onClick="SwapTab('setting','on','',7,7);" id="tab_setting_7" class="{if $type==7}on{/if}">{lang('t-008')}</li>
+				<li onClick="SwapTab('setting','on','',8,1);" id="tab_setting_1" class="{if $type==1}on{/if}">{lang('a-men-65')}</li>
+				<li onClick="SwapTab('setting','on','',8,8);" id="tab_setting_8" class="{if $type==8}on{/if}">{lang('t-009')}</li>
+				<li onClick="SwapTab('setting','on','',8,2);" id="tab_setting_2" class="{if $type==2}on{/if}">{lang('a-men-14')}</li>
+				<li onClick="SwapTab('setting','on','',8,3);" id="tab_setting_3" class="{if $type==3}on{/if}">{lang('a-men-15')}</li>
+				<li onClick="SwapTab('setting','on','',8,4);" id="tab_setting_4" class="{if $type==4}on{/if}">{lang('a-men-16')}</li>
+				<li onClick="SwapTab('setting','on','',8,5);" id="tab_setting_5" class="{if $type==5}on{/if}">{lang('a-men-17')}</li>
+				<li onClick="SwapTab('setting','on','',8,6);" id="tab_setting_6" class="{if $type==6}on{/if}">{lang('t-003')}</li>
+				<li onClick="SwapTab('setting','on','',8,7);" id="tab_setting_7" class="{if $type==7}on{/if}">{lang('t-008')}</li>
 			</ul>
+
 			<div class="contentList pad-10 hidden" id="div_setting_7" style="display: none;">
 				<table width="100%" class="table_form">
 					<tbody>
@@ -313,6 +315,50 @@
 				</tbody>
 			</table>
 			</div>
+
+			<div class="contentList pad-10 hidden" id="div_setting_8" style="display: none;">
+				<table width="100%" class="table_form">
+					<tr>
+						<th width="200">{lang('a-ind-89')}：</th>
+						<td><input class="input-text" type="text" name="data[SITE_KEYWORD_NUMS]" value="{$data['SITE_KEYWORD_NUMS']}" size="10"/>
+							<div class="onShow">{lang('a-ind-90')}</div></td>
+					</tr>
+					<tr>
+						<th>{lang('a-ind-91')}： </th>
+						<td class="y-bg">
+							<input type="radio" {if $data['SITE_TAG_LINK']} checked=""{/if} value="true" checkbox="auto" name="data[SITE_TAG_LINK]" /> {lang('a-yes')}
+							&nbsp;&nbsp;&nbsp;
+							<input type="radio" {if empty($data['SITE_TAG_LINK'])} checked=""{/if} value="false" checkbox="auto" name="data[SITE_TAG_LINK]" /> {lang('a-no')} &nbsp;&nbsp;&nbsp;<div class="onShow">{lang('a-ind-92')}</div>
+						</td>
+					</tr>
+					<tr>
+						<th>{lang('a-ind-93')}：</th>
+						<td class="y-bg"><input type="text" value="{$data['SITE_KEYWORD_CACHE']}" size="10" name="data[SITE_KEYWORD_CACHE]" class="input-text">
+							<div class="onShow">{lang('a-ind-81')}</div></td>
+					</tr>
+					<tr>
+						<th>{lang('a-ind-94')}：</th>
+						<td><input class="input-text" type="text" name="data[SITE_TAG_PAGE]" value="{$data['SITE_TAG_PAGE']}" size="10"/>
+							<div class="onShow">{lang('a-ind-95')}</div></td>
+					</tr>
+					<tr>
+						<th>{lang('a-ind-96')}：</th>
+						<td class="y-bg"><input type="text" value="{$data['SITE_TAG_CACHE']}" size="10" name="data[SITE_TAG_CACHE]" class="input-text">
+							<div class="onShow">{lang('a-ind-81')}</div></td>
+					</tr>
+					<tr>
+						<th>{lang('a-ind-97')}：</th>
+						<td class="y-bg"><input type="text" value="{$data['SITE_TAG_URLRULE']}" size="40" name="data[SITE_TAG_URLRULE]" class="input-text"><div class="onShow">{lang('a-ind-98')}</div></td>
+					</tr>
+					<tr>
+						<th>{lang('a-ind-99')}：</th>
+						<td class="y-bg"><input type="text" value="{$data['SITE_TAG_URL']}" size="40" name="data[SITE_TAG_URL]" class="input-text"><div class="onShow">{lang('a-ind-100')}</div></td>
+					</tr>
+
+					</tbody>
+				</table>
+			</div>
+
 
 			<div class="bk15"></div>
 			<p><input type="submit" class="btn btn-success btn-sm" value="{lang('a-submit')}" name="submit"></p>

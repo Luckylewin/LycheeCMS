@@ -68,6 +68,11 @@ function uploadFile(obj, type, size) {
 	void(0);
 }
 
+/**
+ * 批量swf上传文件
+ * @param obj
+ * @param setting
+ */
 function uploadFiles(obj, setting) {
 	var url = sitepath+'?c=attachment&a=files&setting='+setting+'&document='+finecms_admin_document;
 	var winid = 'win_'+obj;
@@ -99,21 +104,62 @@ function uploadFiles(obj, setting) {
 	void(0);
 }
 
+function uploadFilesOss(obj, setting)
+{
+    var url = sitepath+'?c=attachment&a=ossfiles&setting='+setting+'&document='+finecms_admin_document;
+    var winid = 'win_'+obj;
+    window.top.art.dialog(
+        {id:winid, okVal:fc_lang[6], cancelVal:fc_lang[7], iframe:url, title:fc_lang[3], width:'500', height:'420', lock:true},
+        function(){
+            var d = window.top.art.dialog({id:winid}).data.iframe;
+
+            var files = d.document.getElementById('att-status').innerHTML;
+            var names = d.document.getElementById('att-name').innerHTML;
+
+
+            var file = files.split('|');
+            var name = names.split('|');
+            for (var id in file) {
+                var filepath = file[id];
+                var filename = name[id];
+                if (filepath) {
+                    var c = '<li id="files_'+id+'">';
+                    c += '<input type="text" class="input-text" style="width:310px;" value="'+filepath+'" name="data['+obj+'][file][]">';
+                    c +='<input type="text" class="input-text" style="width:160px;" value="'+filename+'" name="data['+obj+'][alt][]">';
+                    c += '<a href="javascript:removediv(\''+id+'\');">'+fc_lang[2]+'</a> <a href="javascript:;" style="cursor:move;">'+fc_lang[4]+'</a></li>';
+                    $('#'+obj+'-sort-items').append(c);
+                }
+            }
+
+        },
+        function(){
+            window.top.art.dialog({id:winid}).close();
+        }
+    );
+    void(0);
+}
+
 function get_kw() {
 	$.post(sitepath+'?c=api&a=ajaxkw&id='+Math.random(), { data:$('#title').val() }, function(data){ 
         if(data && $('#keywords').val()=='') $('#keywords').val(data); 
 	});
 }
 
-function removediv(fileid) {
+function removediv(fileid)
+{
 	$('#files_'+fileid).remove();
 }
 
-function add_null_file(obj) {
+/**
+ * 添加地址
+ * @param obj
+ */
+function add_null_file(obj)
+{
     var id= parseInt(Math.random()*1000);
     var c = '<li id="files_'+id+'">';
-	c += '<input type="text" class="input-text" style="width:310px;" value="" name="data['+obj+'][file][]">';
-	c +='<input type="text" class="input-text" style="width:160px;" value="" name="data['+obj+'][alt][]">';
+	c += '<input placeholder="资源地址" type="text" class="input-text" style="width:310px;" value="" name="data['+obj+'][file][]">';
+	c +='<input placeholder="资源名称" type="text" class="input-text" style="width:160px;" value="" name="data['+obj+'][alt][]">';
 	c += '<a href="javascript:removediv(\''+id+'\');">'+fc_lang[2]+'</a> <a href="javascript:;" style="cursor:move;" title="'+fc_lang[5]+'">'+fc_lang[4]+'</a></li>';
 	$('#'+obj+'-sort-items').append(c);
 }
