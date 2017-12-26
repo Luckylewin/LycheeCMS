@@ -121,7 +121,7 @@ class IndexController extends Admin
 				} elseif ($config[$var] == 'false') {
 				    $value = 'false';
 				}
-                $content  .= "	'" . strtoupper($var) . "'" . $this->setspace($var) . " => " . $value . ",  //" . $msg . PHP_EOL;
+                $content  .= "	'" . strtoupper($var) . "'" . $this->setSpace($var) . " => " . $value . ",  //" . $msg . PHP_EOL;
 				$system[]  = $var;
             }
 
@@ -129,7 +129,7 @@ class IndexController extends Admin
             foreach ($configdata as $var=>$val) {
 			    if (!in_array($var, $system)) {
                     $value    = $val == 'false' || $val == 'true' ? $val : "'" . $val . "'";
-                    $content .= "	'" . strtoupper($var) . "'" . $this->setspace($var) . " => " . $value . ",  //" . $string[$var] . PHP_EOL;
+                    $content .= "	'" . strtoupper($var) . "'" . $this->setSpace($var) . " => " . $value . ",  //" . $string[$var] . PHP_EOL;
 				}
             }
             $content .= PHP_EOL . ");";
@@ -296,17 +296,17 @@ return array(
 	    $page     = (int)$this->get('page') ? (int)$this->get('page') : 1;
 	    $pagelist = $this->instance('pagelist');
 		$pagelist->loadconfig();
-	    $logsdir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'attack' . DIRECTORY_SEPARATOR;
-		$filedata = file_list::get_file_list($logsdir);
+	    $logsDir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'attack' . DIRECTORY_SEPARATOR;
+		$fileData = file_list::get_file_list($logsDir);
 		$data     = array();
 		$ip       = $this->post('submit') ? $this->post('kw') : $this->get('ip');
-		if ($filedata) {
-		    $filedata      = array_reverse($filedata);
-			foreach ($filedata as $file) {
+		if ($fileData) {
+		    $fileData      = array_reverse($fileData);
+			foreach ($fileData as $file) {
 				if (substr($file, -4) == '.log') {
-					$fdata = file_get_contents($logsdir . $file);
-					$fdata = explode(PHP_EOL, $fdata);
-					foreach ($fdata as $v) {
+					$lodData = file_get_contents($logsDir . $file);
+					$lodData = explode(PHP_EOL, $lodData);
+					foreach ($lodData as $v) {
 						$t = unserialize($v);
 						if ($t && is_array($t)) {
 							if ($ip) {
@@ -320,14 +320,14 @@ return array(
 			}
 		}
 		$total    = count($data);
-		$pagesize = isset($this->site['SITE_ADMIN_PAGESIZE']) && $this->site['SITE_ADMIN_PAGESIZE'] ? $this->site['SITE_ADMIN_PAGESIZE'] : 8;
+		$pageSize = isset($this->site['SITE_ADMIN_PAGESIZE']) && $this->site['SITE_ADMIN_PAGESIZE'] ? $this->site['SITE_ADMIN_PAGESIZE'] : 8;
 		$list     = array();
 
-        $offset   = ($page - 1) * $pagesize;		
+        $offset   = ($page - 1) * $pageSize;
 		foreach ($data as $i => $t) {
-		    if ($i >= $offset && $i < $offset + $pagesize) $list[] = $t;
+		    if ($i >= $offset && $i < $offset + $pageSize) $list[] = $t;
 		}
-		$pagelist = $pagelist->total($total)->url(purl('index/attack', array('page' => '{page}', 'ip' => $ip)))->num($pagesize)->page($page)->output();
+		$pagelist = $pagelist->total($total)->url(purl('index/attack', array('page' => '{page}', 'ip' => $ip)))->num($pageSize)->page($page)->output();
 
 		return $this->render(array(
             'ip'       => $this->cache->get('ip'),
@@ -342,15 +342,15 @@ return array(
 	public function clearlogAction()
     {
 	    $time     = strtotime('-30 day');
-	    $logsdir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
-		$filedata = file_list::get_file_list($logsdir);
+	    $logsDir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
+		$fileData = file_list::get_file_list($logsDir);
 		$count    = 0;
-		if ($filedata) {
-			foreach ($filedata as $file) {
+		if ($fileData) {
+			foreach ($fileData as $file) {
 				if (substr($file, -4) == '.log') {
 					$name = substr($file, 0, 4) . '-' . substr($file, 4, 2) . '-' . substr($file, 6, 2);
 					if ($time > strtotime($name)) {
-						@unlink($logsdir . $file);
+						@unlink($logsDir . $file);
 						$count ++;
 					}
 				}
@@ -365,15 +365,15 @@ return array(
 	public function clearattackAction()
     {
 	    $time     = strtotime('-30 day');
-	    $logsdir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'attack' . DIRECTORY_SEPARATOR;
-		$filedata = file_list::get_file_list($logsdir);
+	    $logsDir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'attack' . DIRECTORY_SEPARATOR;
+		$fileData = file_list::get_file_list($logsDir);
 		$count    = 0;
-		if ($filedata) {
-			foreach ($filedata as $file) {
+		if ($fileData) {
+			foreach ($fileData as $file) {
 				if (substr($file, -4) == '.log') {
 					$name = substr($file, 0, 4) . '-' . substr($file, 4, 2) . '-' . substr($file, 6, 2);
 					if ($time > strtotime($name)) {
-						@unlink($logsdir . $file);
+						@unlink($logsDir . $file);
 						$count ++;
 					}
 				}
@@ -388,8 +388,8 @@ return array(
 	public function ajaxmailAction()
     {
 	    if ($this->get('submit')) {
-	        $toemail = $this->get('mail_to');
-	        if (empty($toemail)) exit(lang('a-ind-33'));
+	        $toEmail = $this->get('mail_to');
+	        if (empty($toEmail)) exit(lang('a-ind-33'));
 	        $config  = array(
 	            'SITE_MAIL_TYPE'     => (int)$this->post('mail_type'),
 	            'SITE_MAIL_SERVER'   => $this->post('mail_server'),
@@ -400,7 +400,7 @@ return array(
 	            'SITE_MAIL_PASSWORD' => $this->post('mail_password')
 	        );
 	        mail::set($config);
-	        if (mail::sendmail($toemail, lang('a-ind-34'), lang('a-ind-35'))) {
+	        if (mail::sendmail($toEmail, lang('a-ind-34'), lang('a-ind-35'))) {
 	            echo lang('a-ind-36');
 	        } else {
 	            echo lang('a-ind-37');
@@ -458,11 +458,13 @@ return array(
 		}
 		exit;
 	}
-	
-	/**
-	 * 空格填补
-	 */
-	private function setspace($var)
+
+    /**
+     * 空格填补
+     * @param $var
+     * @return string
+     */
+	private function setSpace($var)
     {
 	    $len = strlen($var) + 2;
 	    $cha = 25 - $len;

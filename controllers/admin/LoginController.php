@@ -6,7 +6,8 @@ class LoginController extends Admin {
 		parent::__construct();
 	}
 	
-    public function indexAction() {
+    public function indexAction()
+    {
 	    $url = isset($_GET['url']) && $_GET['url'] ? urldecode($this->get('url')) : url('admin//');
 		if ($this->isPostForm()) {
 			/*
@@ -44,7 +45,7 @@ class LoginController extends Admin {
 			}
 		}
 
-		$this->view->display('admin/login');
+        return $this->render([]);
     }
     
     public function logoutAction() {

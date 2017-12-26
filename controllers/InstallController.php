@@ -4,11 +4,13 @@
  * @author Administrator
  */
 
-class InstallController extends Controller {
+class InstallController extends Controller
+{
 
     public $mysqli;
 
-	public function __construct() {
+	public function __construct()
+    {
 
         define('SYS_LANGUAGE',	'zh-cn');	//网站语言设置
         define('LANGUAGE_DIR',	EXTENSION_DIR . 'language' . DIRECTORY_SEPARATOR . SYS_LANGUAGE . DIRECTORY_SEPARATOR);	//网站语言文件
@@ -47,7 +49,8 @@ class InstallController extends Controller {
         }
 	}
 	
-	public function indexAction() {
+	public function indexAction()
+    {
 	    $step = $this->post('step') ? $this->post('step') : 1;
 		switch($step) {
 			case '1'://说明
