@@ -13,7 +13,8 @@ class CategoryController extends Admin {
 	/**
 	 * 栏目列表
 	 */
-	public function indexAction() {
+	public function indexAction()
+    {
 	    if ($this->post('submit')) {
 	        foreach ($_POST as $var => $value) {
 	            if (strpos($var, 'order_') !== false) {
@@ -44,11 +45,11 @@ class CategoryController extends Admin {
         if ($form) {
             $model = $model + $form;
         }
-	    $this->view->assign(array(
-			'model' => $model,
-			'list' => $this->tree->get_tree_data($data)
-		));
-		$this->view->display('admin/category_list');
+
+        return $this->render([
+            'model' => $model,
+            'list' => $this->tree->get_tree_data($data)]
+        );
 	}
 	
 	/**
