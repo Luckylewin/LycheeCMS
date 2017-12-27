@@ -258,7 +258,7 @@ class Common extends CI_Controller
 			'time'   => $time,
 			'result' => $result
 		));
-		$tpl = 'admin/msg';
+		$tpl = 'admin/shared/msg';
         $this->namespace != 'admin' && $tpl = '../' . $tpl;
         $this->view->display($tpl);
         exit;

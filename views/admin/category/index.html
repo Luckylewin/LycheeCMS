@@ -87,11 +87,11 @@
 			<td align="center">&nbsp;{if $c['url']['tohtml']}<span class="label label-success">√</span>{else}<span class="label label-important">×</span>{/if}</td>
 			<td align="center">{$cats[$t['catid']]['items']}</td>
 			<td align="left">
-			<a class="btn btn-success btn-sm" href="{if $t['typeid'] == 3}{$t['url']}{else}{$site_url}{$t['url']}{/if}" target="_blank">{lang('a-cat-23')}</a> |
-			{if admin_auth($userinfo['roleid'], 'category-add')}<a class="btn btn-primary btn-sm" {if $t['typeid']!=3}href="{url('admin/category/add',array('catid'=>$t['catid']))}"{/if}href="javascript:;">{lang('a-add')}</a> | {/if}
-			{if admin_auth($userinfo['roleid'], 'category-edit')}<a class="btn btn-info btn-sm" href="{url('admin/category/edit',array('catid'=>$t['catid']))}">{lang('a-edit')}</a> | {/if}
-			{if admin_auth($userinfo['roleid'], 'category-del')}<a class="btn btn-danger btn-sm" href="javascript:del({$t['catid']});">{lang('a-del')}</a>  |  {/if}
-			{if $t['typeid']==1 && !$t['child'] && !admin_post_auth($userinfo['roleid'], $cats[$t['catid']]['setting'])}&nbsp;<a class="btn btn-warning btn-sm" href="{url('admin/content/add', array('catid'=>$t['catid'], 'modelid'=>$t['modelid']))}">{lang('a-post')}</a>{/if}
+			<a class="btn btn-success btn-xs" href="{if $t['typeid'] == 3}{$t['url']}{else}{$site_url}{$t['url']}{/if}" target="_blank">{lang('a-cat-23')}</a>
+			{if admin_auth($userinfo['roleid'], 'category-add')}<a class="btn btn-primary btn-xs" {if $t['typeid']!=3}href="{url('admin/category/add',array('catid'=>$t['catid']))}"{/if}href="javascript:;">{lang('a-add')}</a> {/if}
+			{if admin_auth($userinfo['roleid'], 'category-edit')}<a class="btn btn-info btn-xs" href="{url('admin/category/edit',array('catid'=>$t['catid']))}">{lang('a-edit')}</a> {/if}
+			{if admin_auth($userinfo['roleid'], 'category-del')}<a class="btn btn-danger btn-xs" href="javascript:del({$t['catid']});">{lang('a-del')}</a>  {/if}
+			{if $t['typeid']==1 && !$t['child'] && !admin_post_auth($userinfo['roleid'], $cats[$t['catid']]['setting'])}&nbsp;<a class="btn btn-warning btn-xs" href="{url('admin/content/add', array('catid'=>$t['catid'], 'modelid'=>$t['modelid']))}">{lang('a-post')}</a>{/if}
 			</td>
 		</tr>
 		{/loop}
