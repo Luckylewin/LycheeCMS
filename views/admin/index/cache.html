@@ -18,11 +18,20 @@
     </div>
 </div>
 <style type="text/css">
+    td{
+        font-weight: bold;
+    }
+ .success{
+        font-size: 25px;
+        font-weight: bold;
+        color: green;
+        text-shadow: 1px 1px 1px blue;
+    }
 .sbul{ margin:10px;}
 .sbul li{ line-height:30px;}
 .button{ margin-top:20px;}
 .subnav,.ifm{ display:none;}
-html{ _overflow-y:scroll}
+html{ _overflow-y:scroll;font-weight: bold}
 </style>
 <div class="pad-10">
 
@@ -64,7 +73,7 @@ html{ _overflow-y:scroll}
         contentType: "application/json; charset=utf-8",
         dataType: "text",
         success: function (data) {
-            $("#dr_cache_{$cache[0]}_{$cache[3][site]}").html("<font color=green>√</font>");
+            $("#dr_cache_{$cache[0]}_{$cache[3][site]}").html("<font  class='success'>√</font>");
         }
     });
 {/loop}

@@ -1243,7 +1243,8 @@ table.dataTable thead .sorting:after {
     user-select:none
 }
 .pace .pace-progress {
-    background:#1ab394;
+    /*background:#1ab394;*/
+    background:#00a3ce;
     position:fixed;
     z-index:2000;
     top:0;
