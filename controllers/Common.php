@@ -131,6 +131,7 @@ class Common extends CI_Controller
 			'cats' => $this->cats,
 			'param' => $this->getParam(),
 			'sites' => App::get_site(),
+			'is_mobile' => App::get_mobile(),
 			'siteid' => $this->siteid,
 			'is_admin' => IS_ADMIN,
 		));

@@ -198,7 +198,8 @@ abstract class App {
 	/**
 	 * 判断客服端是否是手机客服端
 	 */
-	public static function get_mobile() {
+	public static function get_mobile()
+    {
 		if (isset($_SERVER['HTTP_VIA'])) return stristr($_SERVER['HTTP_VIA'],'wap') ? true : false;
 		if (isset($_SERVER['HTTP_USER_AGENT'])) {
 			$client = array(
