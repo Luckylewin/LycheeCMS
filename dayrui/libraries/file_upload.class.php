@@ -175,10 +175,12 @@ class file_upload extends Fn_base {
 		$width   = (int)$this->image['0'];
 		$height  = (int)$this->image['1'];
 		$type    = $this->image['2'];
-		if (empty($width) || empty($height)) return false;
-        $srcfile = $path . $file_name;
-        $tofile  = $srcfile . '.thumb.' . $width . 'x' . $height . '.' . $this->fileext();
-        list($src_w, $src_h, $src_t) = getimagesize($srcfile);  // 获取原图尺寸
+		if (empty($width) || empty($height) || $type == 2) return false;
+
+        $srcFile = $path . $file_name;
+        $toFile  = $srcFile . '.thumb.' . $width . 'x' . $height . '.' . $this->fileext();
+
+        list($src_w, $src_h, $src_t) = getimagesize($srcFile);  // 获取原图尺寸
         $dst_scale = $width/$height; //目标图像长宽比
         $src_scale = $src_h/$src_w; // 原图长宽比
         if( $src_scale >= $dst_scale) {  // 过高
@@ -194,13 +196,13 @@ class file_upload extends Fn_base {
         }
         switch ($src_t) { 
             case 1: //图片类型，1是gif图 
-                $source = @imagecreatefromgif($srcfile);
+                $source = @imagecreatefromgif($srcFile);
             break; 
             case 2: //图片类型，2是jpg图 
-                $source = @imagecreatefromjpeg($srcfile);
+                $source = @imagecreatefromjpeg($srcFile);
             break; 
             case 3: //图片类型，3是png图 
-                $source = @imagecreatefrompng($srcfile);
+                $source = @imagecreatefrompng($srcFile);
             break;
         } 
         if ($type) {
@@ -215,7 +217,7 @@ class file_upload extends Fn_base {
             $final_h = intval($h*$scale);
             imagecopyresampled($target, $source, 0, 0, 0, 0, $final_w, $final_h, $w, $h);
         }
-        imagejpeg($target, $tofile, 100);
+        imagejpeg($target, $toFile, 100);
         imagedestroy($target);
      }
 }

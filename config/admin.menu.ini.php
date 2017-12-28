@@ -28,11 +28,11 @@ return array(
 				'icon' => 'trademark',
 				'uri' => 'admin/index/bq',
 			),
-			array(
+			/*array(
 				'name' => '短信系统',
 				'icon' => 'envelope',
 				'uri' => 'admin/sms/index',
-			),
+			),*/
 			array(
 				'name' => '管理员',
 				'icon' => 'user',
@@ -96,7 +96,7 @@ return array(
 				'url' => url('admin/model/index', array('typeid' => 3)),
 			),
 			array(
-				'name' => '自定义资料',
+				'name' => '碎片文档',
 				'icon' => 'file-text',
 				'uri' => 'admin/block/index',
 			),

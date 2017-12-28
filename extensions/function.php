@@ -1677,7 +1677,8 @@ function fn_sendsms($mobile, $content) {
 /**
  * 当前URL
  */
-function fn_now_url() {
+function fn_now_url()
+{
 
 	$pageURL = 'http';
 	if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
@@ -1703,4 +1704,54 @@ function fn_now_url() {
 function fn_icon($i) {
 	$i = trim($i);
 	return $i ? $i : 'table';
+}
+
+/**
+ * 获取栏目树
+ */
+function getCattree($pid,$site=0,$level=-1)
+{
+    global $site;
+    global $level;
+    $catdata = get_category_data($site);
+    $data = array();
+    $level++;
+    foreach ($catdata as $key => $value) {
+        $value['_level'] = $level;
+        if($value['parentid']==$pid)
+        {
+
+            if($value['child'])
+            {
+                $value['_nextone'] = getCattree($value['catid'],$site);
+            }
+
+            $data[] = $value;
+        }
+    }
+
+    return $data;
+}
+
+function getSingleCat($catid)
+{
+    $data = get_category_data();
+    foreach ($data as $key => $value) {
+        if($value['catid']==$catid)
+        {
+            return $value;
+        }
+    }
+}
+
+function getFirsturl($cats,$catid)
+{
+
+    if(!$cats[$catid]['child'])
+    {
+        return $cats[$catid]['url'];
+    }
+    $nav   = getCatNav($catid);
+    $first = current($nav);
+    return $first['url'];
 }

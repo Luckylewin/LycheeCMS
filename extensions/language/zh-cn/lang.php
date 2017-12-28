@@ -1492,5 +1492,5 @@ return array(
     'a-confirm-install' => '你确认要安装此模板吗?安装之后本站部分数据会被覆盖',
     'a-now-install' => '当前已安装',
     'a-install' => '安装模板',
-
+    'a-original' => '原图'
 );

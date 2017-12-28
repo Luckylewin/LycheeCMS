@@ -17,10 +17,10 @@
 <div class="subnav">
 	<div class="content-menu ib-a blue line-x">
 		<a href="<?php echo url('admin/theme/index')?>" class="on"><em>{lang('a-men-47')}</em></a><span>|</span>
-		{if admin_auth($userinfo['roleid'], 'theme-add')}<a href="<?php echo url('admin/theme/add', array('cpath'=>$cpath))?>"><em>{lang('a-add')}</em></a><span>|</span>{/if}
+		<!--{if admin_auth($userinfo['roleid'], 'theme-add')}<a href="<?php echo url('admin/theme/add', array('cpath'=>$cpath))?>"><em>{lang('a-add')}</em></a><span>|</span>{/if}-->
 		<a href="<?php echo url('admin/theme/cache')?>"><em>{lang('a-cache')}</em></a><span>|</span>
-		<a href="<?php echo url('admin/theme/demo')?>"><em>{lang('标签向导')}</em></a><span>|</span>
-        <a href="http://store.dayrui.com/index.php?c=category&id=14" target="_blank"><em>在线模板</em></a>
+		<a href="<?php echo url('admin/theme/demo')?>"><em>{lang('标签向导')}</em></a><span></span>
+        <!--<a href="http://store.dayrui.com/index.php?c=category&id=14" target="_blank">|<em>在线模板</em></a>-->
 	</div>
 	<div class="bk10"></div>
 	<div class="table-responsive mytable">
