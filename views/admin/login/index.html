@@ -19,7 +19,7 @@
             $("#user").focus();
             window.onload = function() {
                 if (!window.applicationCache) {
-                    alert("你的浏览器不支持HTML5，推荐使用Chrome或IE高版本浏览器");
+
                 }
             }
         });
@@ -46,8 +46,8 @@
         <div class="col-sm-5">
             <form method="post" action="">
                 <h4 class="no-margins">后台登录</h4>
-                <input required type="text" class="form-control uname" id="user" name="username" placeholder="用户名" />
-                <input required type="password" class="form-control pword m-b" name="password" placeholder="密码" />
+                <input required type="text" class="form-control uname" id="user" name="username" autocomplete="off" placeholder="用户名" />
+                <input required type="password" class="form-control pword m-b" name="password" autocomplete="off" placeholder="密码" />
                 <a href="{SITE_URL}" target="_blank">访问前台</a>
                 <button id="submit" name="submit"  class="btn btn-success btn-block">{lang('a-login')}</button>
             </form>

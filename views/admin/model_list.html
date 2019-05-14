@@ -11,7 +11,7 @@
 <script type="text/javascript" src="{ADMIN_THEME}js/jquery.min.js"></script>{template admin/top.html}
 <script type="text/javascript">
 function del(id) {
-	if(confirm('{lang('a-mod-16')}')){
+	if(confirm("{lang('a-mod-16')}")){
 		var url = "{url('admin/model/del/',array('typeid'=>$typeid))}&modelid="+id;
 		window.location.href=url;
 	}
@@ -22,7 +22,7 @@ function cdisabled(id, c) {
 		window.location.href=url;
 		return true;
 	}
-	if (confirm('{lang('a-mod-17')}')) {
+	if (confirm("{lang('a-mod-17')}")) {
 		var url = "{url('admin/model/cdisabled/',array('typeid'=>$typeid))}&modelid="+id;
 		window.location.href=url;
 	}
@@ -58,14 +58,18 @@ function cdisabled(id, c) {
 			<tr>
 				<td align="left">{$t['modelid']}</td>
 				<td align="left">{$typename[$t['typeid']]}</td>
-				<td align="left">{$t['modelname']}</td>
-				<td align="left">{php echo preg_replace('/\_([0-9]+)\_/', '_' . $siteid . '_', $t['tablename']);}</td>
 				<td align="left">
-				{if admin_auth($userinfo['roleid'], 'model-fields')}<a href="{url('admin/model/fields/',array('typeid'=>$typeid, 'modelid'=>$t['modelid']))}">{lang('a-aut-18')}</a> | {/if}
-				{if admin_auth($userinfo['roleid'], 'model-edit')}<a href="{url('admin/model/edit',array('typeid'=>$typeid,'modelid'=>$t['modelid']))}">{lang('a-edit')}</a> | {/if}
-				{if admin_auth($userinfo['roleid'], 'model-cdisabled')}<a href="javascript:cdisabled({$t['modelid']}, {$disable});">{if $disable}<font color=red>{lang('a-qi')}</font>{else}{lang('a-jin')}{/if}</a> | {/if}
-				{if admin_auth($userinfo['roleid'], 'model-export')}<a href="{url('admin/model/export',array('typeid'=>$typeid, 'modelid'=>$t['modelid']))}">{lang('a-export')}</a> | {/if}
-				{if admin_auth($userinfo['roleid'], 'model-del')}<a href="javascript:del({$t['modelid']});">{lang('a-del')}</a> {/if}
+					<b>{$t['modelname']}</b>
+				</td>
+				<td align="left">
+					<b>{php echo preg_replace('/\_([0-9]+)\_/', '_' . $siteid . '_', $t['tablename']);}</b>
+				</td>
+				<td align="left">
+				{if admin_auth($userinfo['roleid'], 'model-fields')}<a class="btn btn-primary btn-sm" href="{url('admin/model/fields/',array('typeid'=>$typeid, 'modelid'=>$t['modelid']))}">{lang('a-aut-18')}</a>  {/if}
+				{if admin_auth($userinfo['roleid'], 'model-edit')}  <a class="btn btn-info btn-sm" href="{url('admin/model/edit',array('typeid'=>$typeid,'modelid'=>$t['modelid']))}">{lang('a-edit')}</a> {/if}
+				{if admin_auth($userinfo['roleid'], 'model-cdisabled')}<a class="btn btn-warning btn-sm" href="javascript:cdisabled({$t['modelid']}, {$disable});">{if $disable}<font color=red>{lang('a-qi')}</font>{else}{lang('a-jin')}{/if}</a>  {/if}
+				{if admin_auth($userinfo['roleid'], 'model-export')}<a class="btn btn-success btn-sm" href="{url('admin/model/export',array('typeid'=>$typeid, 'modelid'=>$t['modelid']))}">{lang('a-export')}</a> {/if}
+				{if admin_auth($userinfo['roleid'], 'model-del')}<a class="btn btn-danger btn-sm" href="javascript:del({$t['modelid']});">{lang('a-del')}</a> {/if}
 				</td>
 			</tr>
 			{/loop}

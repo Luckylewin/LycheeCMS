@@ -28,16 +28,13 @@ return array(
 				'icon' => 'trademark',
 				'uri' => 'admin/index/bq',
 			),
-			/*array(
-				'name' => '短信系统',
-				'icon' => 'envelope',
-				'uri' => 'admin/sms/index',
-			),*/
+
 			array(
 				'name' => '管理员',
 				'icon' => 'user',
 				'uri' => 'admin/user/index',
 			),
+
 			array(
 				'name' => '角色权限',
 				'icon' => 'users',
@@ -80,16 +77,17 @@ return array(
 				'icon' => 'navicon',
 				'uri' => 'admin/category/index',
 			),
-			array(
-				'name' => '附件管理',
-				'icon' => 'folder',
-				'uri' => 'admin/attachment/index',
-			),
+
 			array(
 				'name' => '内容模型',
 				'icon' => 'database',
 				'url' => url('admin/model/index', array('typeid' => 1)),
 			),
+            array(
+                'name' => '关联模型',
+                'icon' => 'database',
+                'url' => url('admin/model/index', array('typeid' => 3,'type' => 'related')),
+            ),
 			array(
 				'name' => '表单模型',
 				'icon' => 'database',
@@ -115,6 +113,11 @@ return array(
 				'icon' => 'retweet',
 				'uri' => 'admin/relatedlink/index',
 			),
+            array(
+                'name' => '附件管理',
+                'icon' => 'folder',
+                'uri' => 'admin/attachment/index',
+            ),
 			array(
 				'name' => '联动菜单',
 				'icon' => 'pie-chart',
@@ -150,23 +153,14 @@ return array(
 			),
 		),
 	),
-	'weixin' => array(
-		'name' => '微信公众号',
-		'icon' => 'weixin',
-		'menu' => array(
-			array('name' => lang('dr019'), 'url' => url('admin/wx/config'),    'icon' => 'cog'),
-			array('name' => lang('dr020'), 'url' => url('admin/wx/index'),    'icon' => 'weixin'),
-			array('name' => lang('dr021'), 'url' => url('admin/wx/keyword'),    'icon' => 'tag'),
-			array('name' => lang('dr023'), 'url' => url('admin/wx/menu'),    'icon' => 'table'),
-			array('name' => lang('dr024'), 'url' => url('admin/wx/user'),    'icon' => 'user'),
-		)
-	),
+
 	'theme' => array(
 		'name' => '模板管理',
 		'icon' => 'code',
 		'uri' => 'admin/theme/index',
 	),
-	'member' => array(
+
+	/*'member' => array(
 		'name' => '会员管理',
 		'icon' => 'user',
 		'menu' => array(
@@ -201,7 +195,7 @@ return array(
 				'uri' => 'admin/member/config',
 			),
 		),
-	),
+	),*/
 	'plugin' => array(
 		'name' => '插件管理',
 		'icon' => 'cloud',
