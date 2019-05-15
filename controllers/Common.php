@@ -703,87 +703,89 @@ class Common extends CI_Controller
 		}
 		return false;
 	}
-	
-	/**
-	 * 生成内容html
-	 */
-	protected function createShow($data, $page = 1) {
-	    if (empty($data)) {
+
+    /**
+     * 生成内容html
+     */
+    protected function createShow($data, $page = 1)
+    {
+        if (empty($data)) {
             return false;
         }
-		ob_start();
-		$id	= $data['id'];
-	    $catid	= $data['catid'];
-	    $cat = $this->cats[$catid];
-		if ($cat['setting']['url']['use'] == 0 || $cat['setting']['url']['tohtml'] == 0  || $cat['setting']['url']['show'] == '') {
+
+        ob_start();
+        $id	= $data['id'];
+        $catid	= $data['catid'];
+        $cat = $this->cats[$catid];
+        if ($cat['setting']['url']['use'] == 0 || $cat['setting']['url']['tohtml'] == 0  || $cat['setting']['url']['show'] == '') {
             return false;
         }
-	    $table = $this->model($cat['tablename']);
-	    $_data = $table->find($id);
-	    $data = array_merge($data, $_data);
-	    $model = $this->get_model();
-	    $data = $this->getFieldData($model[$cat['modelid']], $data);
-	    $data = $this->get_content_page($data, 1, $page);
-	    $url = substr($this->getUrl($data, $page), strlen(Controller::get_base_url())); //去掉域名部分
+        $table = $this->model($cat['tablename']);
+        $_data = $table->find($id);
+        $data = array_merge($data, $_data);
+        $model = $this->get_model();
+        $data = $this->getFieldData($model[$cat['modelid']], $data);
+        $data = $this->get_content_page($data, 1, $page);
+        $url = substr($this->getUrl($data, $page), strlen(Controller::get_base_url())); //去掉域名部分
         if (strpos($url, 'index.php') !== false || strpos($url, 'http://') != false) {
             return false;
         }
-	    if (substr($url, -5) != '.html') { 
-			$file = 'index.html'; //文件名
-			$dir = $url; //目录
-		} else {
-			$file = basename($url);
-			$dir = str_replace($file, '', $url);
-		}
-		$this->mkdirs($dir);
-		$dir = substr($dir, -1) == '/' ? substr($dir, 0, -1) : $dir;
-		$htmlfile = $dir ? $dir . '/' . $file : $file;
-		if ($data['status'] == 0) {
-		    @unlink($htmlfile);
-			if (isset($pagelist) && is_array($pagelist)) {
-		        foreach ($pagelist as $p=>$u) {
-				    $file = str_replace(Controller::get_base_url(), '', $u);
-				    @unlink($file);
-				}
-			}
-			return false;
-		}
-		$prev_page = $this->content->getOne("`catid`=$catid AND `id`<$id AND `status`<>0 ORDER BY `id` DESC", null, 'title,url,hits');
-		$next_page = $this->content->getOne("`catid`=$catid AND `id`>$id AND `status`<>0", null, 'title,url,hits');
-	    $data['content'] = relatedlink($data['content']);
-	    $this->view->assign(array(
-	        'cat' => $cat,
-		    'cats' => $this->cats,
-	        'page' => $page,
-	        'pageurl' => urlencode(getUrl($data, '{page}')),
-	        'prev_page'	=> $prev_page,
-	        'next_page'	=> $next_page
-	    ));
-	    $this->view->assign($data);
-	    $this->view->assign(showSeo($data, $page));
-		if ($this->namespace == 'admin') {
+        if (substr($url, -5) != '.html') {
+            $file = 'index.html'; //文件名
+            $dir = $url; //目录
+        } else {
+            $file = basename($url);
+            $dir = str_replace($file, '', $url);
+        }
+        $this->mkdirs($dir);
+        $dir = substr($dir, -1) == '/' ? substr($dir, 0, -1) : $dir;
+        $htmlfile = $dir ? $dir . '/' . $file : $file;
+        if ($data['status'] == 0) {
+            @unlink($htmlfile);
+            if (isset($pagelist) && is_array($pagelist)) {
+                foreach ($pagelist as $p=>$u) {
+                    $file = str_replace(Controller::get_base_url(), '', $u);
+                    @unlink($file);
+                }
+            }
+            return false;
+        }
+        $prev_page = $this->content->getOne("`catid`=$catid AND `id`<$id AND `status`<>0 ORDER BY `id` DESC", null, 'title,url,hits');
+        $next_page = $this->content->getOne("`catid`=$catid AND `id`>$id AND `status`<>0", null, 'title,url,hits');
+        $data['content'] = relatedlink($data['content']);
+        $this->view->assign(array(
+            'cat' => $cat,
+            'cats' => $this->cats,
+            'page' => $page,
+            'pageurl' => urlencode(getUrl($data, '{page}')),
+            'prev_page'	=> $prev_page,
+            'next_page'	=> $next_page
+        ));
+        $this->view->assign($data);
+        $this->view->assign(showSeo($data, $page));
+        if ($this->namespace == 'admin') {
             $this->view->setTheme(true);
         }
-	    $this->view->display(substr($cat['showtpl'], 0, -5));
-		if ($this->namespace == 'admin') {
+        $this->view->display(substr($cat['showtpl'], 0, -5));
+        if ($this->namespace == 'admin') {
             $this->view->setTheme(false);
         }
-		if (!file_put_contents($htmlfile, ob_get_clean(), LOCK_EX)) {
-            $this->adminMsg(lang('a-com-11', array('1' => $htmlfile)));
+        if (!file_put_contents($htmlfile, ob_get_clean(), LOCK_EX)) {
+            $this->htmlMsg(lang('a-com-11', array('1' => $htmlfile)));
         }
-		$htmlfiles = $this->cache->get('html_files');
-		$htmlfiles[] = $htmlfile;
-		$this->cache->set('html_files', $htmlfiles);
-		if (isset($_data['content']) && strpos($_data['content'], '{-page-}') !== false) {
-			$content = explode('{-page-}', $_data['content']);
-			$pageid	= $page <= 0 ? 1 : $page;
-			$nextpage = $pageid + 1;
-			if ($nextpage <= count($content)) {
+        $htmlfiles = $this->cache->get('html_files');
+        $htmlfiles[] = $htmlfile;
+        $this->cache->set('html_files', $htmlfiles);
+        if (isset($_data['content']) && strpos($_data['content'], '{-page-}') !== false) {
+            $content = explode('{-page-}', $_data['content']);
+            $pageid	= $page <= 0 ? 1 : $page;
+            $nextpage = $pageid + 1;
+            if ($nextpage <= count($content)) {
                 $this->createShow($data, $nextpage);
             }
-		}
-		return true;
-	}
+        }
+        return true;
+    }
 	
 	/**
 	 * 生成表单html

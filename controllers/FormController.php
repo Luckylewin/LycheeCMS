@@ -1,6 +1,9 @@
 <?php
 
-class FormController extends Common {
+class FormController extends Common
+{
+
+    public $commonHtml = false;
 
     private $model;
 	private $form;

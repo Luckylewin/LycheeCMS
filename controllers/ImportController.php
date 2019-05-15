@@ -7,7 +7,9 @@
  * @description	采集数据可以不再手动修改接收参数，程序自动处理POST数据
  */
 
-class ImportController extends Common {
+class ImportController extends Common
+{
+    public $commonHtml = false;
 
 	public function __construct() {
         parent::__construct();

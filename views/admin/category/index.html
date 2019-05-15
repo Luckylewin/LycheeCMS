@@ -74,7 +74,11 @@
 			<td align="left"><input name="ids[]" type="checkbox" value="{$t['catid']}" class="deletec" /></td>
 			<td align="center"><input type="text" name="order_{$t['catid']}" class="input-text" style="width:35px;text-align:center" value="{$t['listorder']}"></td>
 			<td align="center">{$t['catid']}</td>
-			<td align="left" class="catname">{str_replace($t['catname'], ' <a href="' . url('admin/category/edit',array('catid'=>$t['catid'])) . '">' . $t['catname'] . '</a>', $t['prefix'])}</td>
+			<td align="left" class="catname">
+				<b>
+					{str_replace($t['catname'], ' <a href="' . url('admin/category/edit',array('catid'=>$t['catid'])) . '">' . $t['catname'] . '</a>', $t['prefix'])}
+				</b>
+			</td>
 			<td align="left">
 			{if $t['typeid']==1}<font color="#666666">{lang('a-cat-20')}</font>{/if}
 			{if $t['typeid']==2}<font color="#0000FF">{lang('a-cat-21')}</font>{/if}

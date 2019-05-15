@@ -1313,6 +1313,11 @@ function linkageids($keyid, $id) {
 	return $ids;
 }
 
+function back()
+{
+    return "<a href=\"{$_SERVER['HTTP_REFERER']}\" class=\"btn btn-sm btn-white\">返回</a>";
+}
+
 /**
  * 表单调用联动菜单
  * @param $linkageid 联动菜单id

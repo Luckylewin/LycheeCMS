@@ -55,7 +55,7 @@ function del(id){
 			<td align="left"> </td>
 			<td align="left"> </td>
             <td align="center">{if $content['keywords']['show']}<span class="label label-success">√</span>{else}<span class="label label-important">×</span>{/if}</td>
-			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'title'))}">{lang('a-edit')}</a>{/if}</td>
+			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a class="btn btn-sm btn-primary" href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'title'))}">{lang('a-edit')}</a>{/if}</td>
 		</tr>
 		<tr>
 			<td align="left"></td>
@@ -65,7 +65,7 @@ function del(id){
 			<td align="left"> </td>
 			<td align="left"> </td>
             <td align="center">{if $content['keywords']['show']}<span class="label label-success">√</span>{else}<span class="label label-important">×</span>{/if}</td>
-			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'keywords'))}">{lang('a-edit')}</a>{/if}</td>
+			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a class="btn btn-sm btn-primary" href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'keywords'))}">{lang('a-edit')}</a>{/if}</td>
 		</tr>
 		<tr height="25">
 			<td align="left"></td>
@@ -75,7 +75,7 @@ function del(id){
 			<td align="left"> </td>
 			<td align="left"> </td>
             <td align="center">{if $content['thumb']['show']}<span class="label label-success">√</span>{else}<span class="label label-important">×</span>{/if}</td>
-			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'thumb'))}">{lang('a-edit')}</a>{/if}</td>
+			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a class="btn btn-sm btn-primary" href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'thumb'))}">{lang('a-edit')}</a>{/if}</td>
 		</tr>
 		<tr>
 			<td align="left"></td>
@@ -85,27 +85,34 @@ function del(id){
 			<td align="left"> </td>
 			<td align="left"> </td>
             <td align="center">{if $content['description']['show']}<span class="label label-success">√</span>{else}<span class="label label-important">×</span>{/if}</td>
-			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'description'))}">{lang('a-edit')}</a>{/if}</td>
+			<td align="left">{if admin_auth($userinfo['roleid'], 'model-editfield')}<a class="btn btn-sm btn-primary" href="{url('admin/model/ajaxedit/',array('modelid'=>$modelid,'name'=>'description'))}">{lang('a-edit')}</a>{/if}</td>
 		</tr>
 		{/if}
 		{loop $list $t}
 		<tr style="{if $t['formtype']=='merge'}background-color:#FFC{else if $t['formtype']=='fields'}background-color:#EEF3F7{/if}">
 			<td align="left">
 			<input type="text" name="order_{$t['fieldid']}" class="input-text" style="width:35px;" value="{$t['listorder']}"></td>
-			<td align="left">{$t['field']}</td>
+			<td align="left"><b>{$t['field']}</b></td>
 			<td align="left">{$t['name']}</td>
 			<td align="left">{if $t['formtype']=='merge'}{lang('a-mod-34')}{else}{$t['formtype']}{/if}</td>
 			<td align="left">{$t['type']}</td>
-			<td align="left">{$t['indexkey']}</td>
+			<td align="left">{php echo isset($t['indexkey']) && !empty($t['indexkey'] )?$t['indexkey']:'无'}</td>
 			<td align="center">{if $t['isshow']}<span class="label label-success">√</span>{else}<span class="label label-important">×</span>{/if}</td>
 			<td align="left">
-			{if admin_auth($userinfo['roleid'], 'model-editfield')}<a href="{url('admin/model/editfield/',array('typeid'=>$typeid,'fieldid'=>$t['fieldid']))}">{lang('a-edit')}</a> | {/if}
-			{if admin_auth($userinfo['roleid'], 'model-disable')}<a href="{url('admin/model/disable/',array('typeid'=>$typeid,'fieldid'=>$t['fieldid']))}">{if $t['disabled']==1}<font color="#FF0000">{lang('a-qi')}</font>{else}{lang('a-jin')}{/if}</a> | {/if}
-			{if admin_auth($userinfo['roleid'], 'model-del')}{if $t['field'] == 'content'}<a href="javascript:;" style="color:#ACA899">{lang('a-del')}</a> {else}<a href="javascript:del({$t['fieldid']});">{lang('a-del')}</a> {/if}{/if}</td>
+			{if admin_auth($userinfo['roleid'], 'model-editfield')}<a class="btn btn-sm btn-info" href="{url('admin/model/editfield/',array('typeid'=>$typeid,'fieldid'=>$t['fieldid']))}">{lang('a-edit')}</a> {/if}
+			{if admin_auth($userinfo['roleid'], 'model-disable')}<a class="btn btn-sm btn-warning"  href="{url('admin/model/disable/',array('typeid'=>$typeid,'fieldid'=>$t['fieldid']))}">{if $t['disabled']==1}<font color="#FF0000">{lang('a-qi')}</font>{else}{lang('a-jin')}{/if}</a> {/if}
+			{if admin_auth($userinfo['roleid'], 'model-del')}{if $t['field'] == 'content'}
+			<a class="btn btn-sm btn-danger" href="javascript:" >{lang('a-del')}</a>
+			{else}
+			<a class="btn btn-sm btn-danger" href="javascript:del({$t['fieldid']});">{lang('a-del')}</a> {/if}{/if}</td>
 		</tr>
 		{/loop}
 		<tr>
-			<td colspan="8" align="left"><input {if !admin_auth($userinfo['roleid'], 'model-editfield')}disabled{/if} class="btn btn-success btn-sm" type="submit" name="submit" value="{lang('a-order')}" /></td>
+			<td colspan="8" align="left">
+				<input {if !admin_auth($userinfo['roleid'], 'model-editfield')}disabled{/if} class="btn btn-success btn-sm" type="submit" name="submit" value="{lang('a-order')}" />
+				{back()}
+			</td>
+
 		</tr>
 		</tbody>
 		</table>

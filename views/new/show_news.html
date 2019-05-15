@@ -32,7 +32,11 @@
                     <!-- Date -->
                     <li><i class="icon-user"></i><a href="#">{$username}</a></li>
                     <!-- Author -->
-                    <li><i class="icon-thumbs-up"></i><a href="#"><script type="text/javascript" src="{url('api/hits',array('id'=>$id, 'hits'=>$hits))}"></script></a></li>
+                    <li>
+                        <i class="icon-thumbs-up"></i><a href="#">
+                       <!-- <script type="text/javascript" src="{url('api/hits',array('id'=>$id, 'hits'=>$hits))}"></script>-->
+                    </a>
+                    </li>
                     <!-- Category -->
                 </ul>
                 <!-- End post-meta -->
@@ -66,25 +70,6 @@
                 </div>
                 {if plugin('digg')}<div class="clear blank10"></div><script type="text/javascript" src="{url('digg/index/show', array('id'=>$id))}"></script>{/if}
                 {if plugin('mood')}<div class="clear blank10"></div><script type="text/javascript" src="{url('mood/index/show', array('id'=>$id))}"></script>{/if}
-
-                {if $commentCfg}
-                <!-- 多说评论框 start -->
-                <div class="ds-thread" data-thread-key="{$id}" data-title="{$title}" data-url="{$pageurl}"></div>
-                <!-- 多说评论框 end -->
-                <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-                <script type="text/javascript">
-                    var duoshuoQuery = {short_name:"dayruicms"};
-                    (function() {
-                        var ds = document.createElement('script');
-                        ds.type = 'text/javascript';ds.async = true;
-                        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-                        ds.charset = 'UTF-8';
-                        (document.getElementsByTagName('head')[0]
-                        || document.getElementsByTagName('body')[0]).appendChild(ds);
-                    })();
-                </script>
-                <!-- 多说公共JS代码 end -->
-                {/if}
 
 
             </div>

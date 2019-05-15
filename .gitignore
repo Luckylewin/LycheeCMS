@@ -4,3 +4,4 @@ config/
 models/
 *.cache.php
 .idea
+html

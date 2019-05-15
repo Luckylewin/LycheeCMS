@@ -821,10 +821,10 @@ class View
 		}
 
 		if ($append == false) {
-            include_once $compile_file;
+            include $compile_file;
             if (!empty($this->append)) {
                 foreach ($this->append as $html) {
-                    include_once $html;
+                    include $html;
                 }
                 $this->append = [];
             }

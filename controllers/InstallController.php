@@ -6,6 +6,7 @@
 
 class InstallController extends Controller
 {
+    public $commonHtml = false;
 
     public $mysqli;
 

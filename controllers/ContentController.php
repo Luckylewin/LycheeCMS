@@ -1,7 +1,9 @@
 <?php
 
 class ContentController extends Common {
-    
+
+    public $commonHtml = false;
+
     public function __construct() {
 		parent::__construct();
 	}

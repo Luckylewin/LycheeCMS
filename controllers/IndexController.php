@@ -1,6 +1,9 @@
 <?php
 
-class IndexController extends Common {
+class IndexController extends Common
+{
+
+    public $commonHtml = false;
 
 	public function __construct() {
         parent::__construct();

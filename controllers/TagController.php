@@ -1,9 +1,11 @@
 <?php
 
-class TagController extends Common {
-    
+class TagController extends Common
+{
 	protected $tag;
-	
+
+	public $commonHtml = false;
+
     public function __construct() {
 		parent::__construct();
 		$this->tag = $this->model('tag');

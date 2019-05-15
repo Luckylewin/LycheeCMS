@@ -6,7 +6,8 @@ class ModelController extends Admin {
 	private $typeid;
 	private $modeltype; //模型类型
     
-    public function __construct() {
+    public function __construct()
+    {
 		parent::__construct();
 		$this->modeltype = array(
 		    1 => 'content', //内容表模型
@@ -14,6 +15,7 @@ class ModelController extends Admin {
 			3 => 'form',    //表单表模型
 			4 => 'extend',	//会员扩展模型
 		);
+
 		$this->_model = $this->model('model');
 	    $this->typeid = $this->get('typeid') ? $this->get('typeid') : 1;
 		if (!isset($this->modeltype[$this->typeid])) $this->adminMsg(lang('a-mod-0'));
