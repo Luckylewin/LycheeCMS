@@ -3,7 +3,9 @@
 class MemberController extends Admin {
     
 	private $mgroup;
-    
+
+	public $commonHtml = false;
+
     public function __construct() {
 		parent::__construct();
         if ($this->config['SYS_MEMBER']) {

@@ -1,7 +1,9 @@
 <?php
 
 class Member extends Common {
-    
+
+    public $commonHtml = false;
+
 	public function __construct() {
 		parent::__construct();
         if ($this->config['SYS_MEMBER']) {
