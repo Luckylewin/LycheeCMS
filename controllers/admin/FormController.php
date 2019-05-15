@@ -75,7 +75,9 @@ class FormController extends Admin {
 					}
 	            }
 	        }
-			$this->adminMsg(lang('success'), '', 3, 1, 1);
+
+	        $this->adminMsg(lang('success'), true);
+
 	    } elseif ($this->post('submit_status_3') && $this->post('form') == 'status_3') {
 	        foreach ($_POST as $var => $value) {
 	            if (strpos($var, 'del_') !== false) {
@@ -99,9 +101,10 @@ class FormController extends Admin {
 						}
 					}
 				}
-				$this->adminMsg(lang('success'), '', 3, 1, 1);
+				$this->adminMsg(lang('success'), true);
 			}
 	    }
+
 	    $kw       = $kw ? $kw : $this->get('kw');
 		$page     = $this->get('page') ? $this->get('page') : 1;
 	    $stype    = $stype ? $stype : (int)$this->get('stype');
@@ -143,6 +146,7 @@ class FormController extends Admin {
             'tpl' => !is_file(VIEW_DIR.'admin/'.$this->table.'.html') ? 'admin/form_default' : 'admin/'.$this->table,
             'diy_file' => is_file(VIEW_DIR.'admin/'.$this->table.'.html') ? '' : '/views/admin/'.$this->table.'.html',
 	    ));
+
 	    $this->view->display('admin/form_list');
 	}
 	
@@ -169,8 +173,10 @@ class FormController extends Admin {
 			);
 			$model= $this->model('model');
 			$model->update($set, 'modelid=' . $this->modelid);
-			$this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/form/config', array('modelid' => $this->modelid, 'cid' => $this->cid, 'typeid' => $this->post('typeid'))), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/form/config', array('modelid' => $this->modelid, 'cid' => $this->cid, 'typeid' => $this->post('typeid'))));
+
 		}
+
 		$count[1] = $this->content->count($this->table, null, 'status=1');
 		$count[0] = $this->content->count($this->table, null, 'status=0');
 		$count[3] = $this->content->count($this->table, null, 'status=3');
@@ -247,7 +253,7 @@ class FormController extends Admin {
 		if ($this->isPostForm()) {
 		    $data = $this->post('data');
 			$cid  = (int)$this->post('cid');
-			if ($this->join && empty($cid)) $this->adminMsg(lang('a-for-17'), '', 1);
+			if ($this->join && empty($cid)) $this->adminMsg(lang('a-for-17'), true);
 			if ($this->join) {
 				$table = $this->model($this->join['tablename']);
 				$cdata = $table->find($cid, 'id');
@@ -263,8 +269,11 @@ class FormController extends Admin {
 				if (isset($this->model['setting']['form']['url']['tohtml']) && $this->model['setting']['form']['url']['tohtml'] && $data['status'] == 1) {
 					$this->createForm($this->modelid, $data);	//生成静态
 				}
-			    $this->adminMsg(lang('success'), url('admin/form/list', array('modelid' => $this->modelid, 'cid' => $this->cid)), 3, 1, 1);
+
+			    $this->adminMsg(lang('success'), true, url('admin/form/list', array('modelid' => $this->modelid, 'cid' => $this->cid)));
+
 			} else {
+
 			    $this->adminMsg(lang('failure'));
 			}
 		}
@@ -290,7 +299,11 @@ class FormController extends Admin {
 			if ($this->adminPost($this->model['setting']['auth'])) $this->adminMsg(lang('a-cat-100', array('1' => $this->userinfo['rolename'])));
 			$cid  = (int)$this->post('cid');
 		    $data = $this->post('data');
-			if ($this->join && empty($cid)) $this->adminMsg(lang('a-for-17'), '', 1);
+
+			if ($this->join && empty($cid)) {
+                $this->adminMsg(lang('a-for-17'), false);
+            }
+
 			$this->checkFields($this->model['fields'], $data, 1);
 			$data['cid']        = $cid;
 			$data['updatetime'] = time();
@@ -298,8 +311,11 @@ class FormController extends Admin {
 				if (isset($this->model['setting']['form']['url']['tohtml']) && $this->model['setting']['form']['url']['tohtml'] && $data['status'] == 1) {
 					$this->createForm($this->modelid, $data);
 				}
-			    $this->adminMsg(lang('success'), url('admin/form/list', array('modelid' => $this->modelid, 'cid' => $this->cid)), 3, 1, 1);
+
+				$this->adminMsg(lang('success'), true ,url('admin/form/list', array('modelid' => $this->modelid, 'cid' => $this->cid)));
+
 			} else {
+
 			    $this->adminMsg(lang('failure'));
 			}
 		}
@@ -321,13 +337,15 @@ class FormController extends Admin {
 	/**
 	 * 删除
 	 */
-	public function delAction($id=0, $all=0) {
+	public function delAction($id=0, $all=0)
+    {
         if (!auth::check($this->roleid, 'form-del', 'admin')) $this->adminMsg(lang('a-com-0', array('1' => 'form', '2' => 'del')));
 	    $id	 = $id  ? $id  : (int)$this->get('id');
 	    $all = $all ? $all : $this->get('all');
 		$this->delFile($id);
 	    $this->form->delete('id=' . (int)$id);
-	    $all or $this->adminMsg(lang('success'), url('admin/form/list', array('modelid' => $this->modelid, 'cid' => $this->cid)), 3, 1, 1);
+
+	    $all or $this->adminMsg(lang('success'), true, url('admin/form/list', array('modelid' => $this->modelid, 'cid' => $this->cid)));
 	}
 	
 	/**

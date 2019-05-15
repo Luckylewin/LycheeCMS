@@ -9,53 +9,34 @@ class AdminController extends Plugin {
         App::auto_load('fields'); //加载字段操作函数库
     }
     
-  /**
+     /**
      * 广告位置
      */
-    public function indexAction() {
-
+    public function indexAction()
+    {
         return $this->alistAction();
-
-      if ($this->isPostForm()) {
-        $data = $this->post('data');
-      if ($data && is_array($data)) {
-        foreach ($data as $id) {
-          if ($id) {
-              $this->myblock->delete('id=' . $id);
-              $this->myblock_data->delete('aid=' . $id);
-          }
-        }
-      }
-      }
-        $page = (int)$this->get('page');
-    $page = (!$page) ? 1 : $page;
-      $pagelist = $this->instance('pagelist');
-    $pagelist->loadconfig();
-      $total    = $this->myblock->count('myblock');
-      $pagesize =30;
-      $url      = url('myblock/admin/index', array('page'=>'{page}'));
-      $data     = $this->myblock->page_limit($page, $pagesize)->select();
-      $pagelist = $pagelist->total($total)->url($url)->num($pagesize)->page($page)->output();
-      $this->assign(array(
-          'list'     => $data,
-          'pagelist' => $pagelist,
-      ));
-      $this->display('admin_list');
     }
     
-  /**
+    /**
      * 添加广告位
      */
-    public function addAction() {
+    public function addAction()
+    {
 
         if ($this->isPostForm()) {
+
             $data = $this->post('data');
-      unset($data['id']);
+
+            unset($data['id']);
+
             $data['adname'] or $this->adminMsg('广告位名称不能为空');
-      if (empty($data['width']) || empty($data['height'])) $this->adminMsg('广告位高宽不能为空！');
-            $this->myblock->insert($data);
-            $this->adminMsg('操作成功', url('myblock/admin'), 3, 1, 1);
-        }
+
+            if (empty($data['width']) || empty($data['height'])) {
+                $this->adminMsg('广告位高宽不能为空！');
+            }
+                    $this->myblock->insert($data);
+                    $this->adminMsg('操作成功',true, url('myblock/admin'));
+         }
 
         $this->display('admin_add');
     }
@@ -73,7 +54,7 @@ class AdminController extends Plugin {
             $data['adname'] or $this->adminMsg('广告位名称不能为空');
       if (empty($data['width']) || empty($data['height'])) $this->adminMsg('广告位高宽不能为空！');
             $this->myblock->update($data, 'id=' . $id);
-            $this->adminMsg('操作成功', url('myblock/admin'), 3, 1, 1);
+            $this->adminMsg('操作成功',true, url('myblock/admin'));
         }
         $this->assign(array(
             'data'   => $data,
@@ -140,7 +121,7 @@ class AdminController extends Plugin {
         $this->assign(array(
           'list'     => $data,
           'pagelist' => $pagelist,
-      'aid'      => $aid,
+          'aid'      => $aid,
           'type'     => $this->getType(),
       ));
       $this->display('admin_alist');
@@ -176,7 +157,7 @@ class AdminController extends Plugin {
 
             $this->myblock_data->insert($data);
 
-            $this->adminMsg('操作成功', purl('admin/alist', array('aid'=>$aid)), 3, 1, 1);
+            $this->adminMsg('操作成功',true, purl('admin/alist', array('aid'=>$aid)));
         }
         //获取栏目
         $cat = getCattree(0,0);
@@ -215,9 +196,11 @@ class AdminController extends Plugin {
             $data = $this->post('data');
 
             $result = $this->db->update('fn_myblock_data', $data , array('id' => $id));
-            
-            $this->adminMsg('操作成功', purl('admin/alist', array('aid'=>$aid)), 3, 1, 1);
+
+            $this->adminMsg('操作成功',true, purl('admin/alist', array('aid'=>$aid)));
+
         }
+
         $list    = $this->getType();
         $type    = $list[$data['typeid']]['fields'];
         if (empty($type)) $this->adminMsg('广告类型不存在');
@@ -228,11 +211,11 @@ class AdminController extends Plugin {
 
         $this->assign(array(
             'actions' => 'edit',
-            'cat' => $cat,
-            'data'   => $data,
-            'type'   => $list,
-            'fields' => $fields,
-      'aid'    => $data['aid']
+            'cat'     => $cat,
+            'data'    => $data,
+            'type'    => $list,
+            'fields'  => $fields,
+            'aid'     => $data['aid']
         ));
         
         $this->display('admin_edit');
@@ -241,29 +224,37 @@ class AdminController extends Plugin {
   /**
      * 删除广告位
      */
-    public function delAction() {
+    public function delAction()
+    {
         $id = $this->get('id');
         $this->myblock->delete('id=' . $id);
-    $this->myblock_data->delete('aid=' . $id);
-        $this->adminMsg('操作成功', url('myblock/admin'), 3, 1, 1);
+        $this->myblock_data->delete('aid=' . $id);
+        $this->adminMsg('操作成功', true,url('myblock/admin'));
     }
     
   /**
      * 禁用广告
      */
-    public function disabledAction() {
+    public function disabledAction()
+    {
         $id   = $this->get('id');
+
         $data = $this->myblock_data->find($id);
+
         if (empty($data)) $this->adminMsg('广告不存在');
+
         $set  = $data['disabled'] ? 0 : 1;
+
         $this->myblock_data->update(array('disabled'=>$set), 'id=' . $id);
-        $this->adminMsg('操作成功', url('myblock/admin/alist', array('aid'=>$data['aid'])), 3, 1, 1);
+
+        $this->adminMsg('操作成功', true,url('myblock/admin/alist', array('aid'=>$data['aid'])));
     }
     
     /**
    * 加载调用代码
    */
-  public function ajaxviewAction() {
+  public function ajaxviewAction()
+  {
         $id   = $this->get('id');
         $data = $this->myblock->find($id);
       if (empty($data)) exit('该广告(#' . $id . ')不存在');
@@ -278,7 +269,8 @@ class AdminController extends Plugin {
   /**
    * 缓存
    */
-  public function cacheAction() {
+  public function cacheAction()
+  {
       $list = $this->myblock->findAll();
       $list = [['id'=>1]];
       $data = array();
@@ -287,13 +279,14 @@ class AdminController extends Plugin {
       $data[$t['id']]['data'] = $this->myblock_data->where('aid=' . $t['id'])->order('listorder ASC,addtime DESC')->select();
       }
       $this->cache->set('myblock', $data);
-      $this->adminMsg('广告缓存更新成功');
+      $this->adminMsg('广告缓存更新成功',true);
   }
     
     /**
      * 广告类型
      */
-    private function getType() {
+    private function getType()
+    {
         $list    = array();
         $list[1] = array(
             'name'   => '图片广告',
@@ -314,7 +307,8 @@ class AdminController extends Plugin {
     /**
      * 动态调用广告类型字段
      */
-    public function ajaxfieldAction() {
+    public function ajaxfieldAction()
+    {
         $tid    = $this->get('tid');
         $list   = $this->getType();
         $fields = $list[$tid]['fields'];
@@ -324,44 +318,40 @@ class AdminController extends Plugin {
 
     /**
      * 一键绑定一级栏目
-     * @return [type] [description]
+     * @return bool
      */
     public function floodbindAction()
     {
        $aid = (int)$this->get('aid');
-  if ($this->post('submit')) {
-       $data = $this->post('data');
-       $cats = get_category_data();
-       foreach ($cats as $key => $cat) {
-    if ($cat['parentid']==0 && $cat['ismenu'])
-       {
-         $data['typeid']    = $data['typeid']?$data['typeid']:1;
-         $data['addtime']   = time();
-         $data['catid']     = $cat['catid'];
-         $data['aid']       = $aid;
-
-         $temp = $data;
-         $temp['name'] = $cat['catname'];
-         $setting = array();
-        
-         foreach ($temp as $name=>$t) {
-         
-            if (substr($name, 0, 7) == 'setting') {
-               $setting[$name] = $t; 
-            }
+       if ($this->post('submit')) {
+           $data = $this->post('data');
+           $cats = get_category_data();
+           foreach ($cats as $key => $cat) {
+                if ($cat['parentid']==0 && $cat['ismenu']) {
+                     $data['typeid']    = $data['typeid']?$data['typeid']:1;
+                     $data['addtime']   = time();
+                     $data['catid']     = $cat['catid'];
+                     $data['aid']       = $aid;
+                     $temp = $data;
+                     $temp['name'] = $cat['catname'];
+                     $setting = array();
+                     foreach ($temp as $name=>$t) {
+                        if (substr($name, 0, 7) == 'setting') {
+                           $setting[$name] = $t;
+                        }
+                    }
+                    $temp['setting']   = array2string($setting);
+                    $this->myblock_data->insert($temp);
+               }
         }
-         $temp['setting']   = array2string($setting);
 
-        $this->myblock_data->insert($temp);
-       } 
+        return $this->adminMsg('操作成功',true, url('myblock/admin'));
+    } else {
+           $this->assign(array('type' => $this->getType()));
+           $this->display('admin_addb');
     }
-  
-     $this->adminMsg('操作成功', url('myblock/admin'), 3, 1, 1);exit();
-   }    
      
-        $this->assign(array('type' => $this->getType()));
-        $this->display('admin_addb');
-    }
+}
 
     /**
      * 开发批量导入
@@ -391,10 +381,13 @@ class AdminController extends Plugin {
         $temp['setting']   = array2string($setting);
         $this->myblock_data->insert($temp);
         }
-         $this->adminMsg('操作成功', url('myblock/admin'), 3, 1, 1);exit();
+
+        return $this->adminMsg('操作成功', true, url('myblock/admin'));
+
       }
-        $this->assign(array('type' => $this->getType()));
-        $this->display('admin_flood');
+
+         $this->assign(array('type' => $this->getType()));
+         $this->display('admin_flood');
     }
   
 }

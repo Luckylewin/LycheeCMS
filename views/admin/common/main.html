@@ -1,0 +1,30 @@
+<link href="{ADMIN_THEME}js/toastr/toastr.min.css" rel="stylesheet">
+<script src="{ADMIN_THEME}js/toastr/toastr.min.js"></script>
+
+<script>
+    var msg = '<?php echo "$toastr_msg"?>',
+        status = '<?php echo "$toastr_status" ?>';
+
+    toastr.options = {
+        "closeButton": true,
+        "debug": true,
+        "progressBar": true,
+        "positionClass": "toast-bottom-right",
+        "showDuration": "400",
+        "hideDuration": "1000",
+        "timeOut": "4000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "slideDown",
+        "hideMethod": "slideUp"
+    };
+
+    if (msg) {
+        if (status === 'warning') {
+            toastr.warning(msg);
+        } else {
+            toastr.success(msg);
+        }
+    }
+</script>

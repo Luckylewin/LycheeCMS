@@ -783,11 +783,13 @@ class View
 		return $compile_file;
 	}
 
+	public $append;
+
     /**
      * 显示视图文件
      * @param null $file_name
      */
-	public function display($file_name = null)
+	public function display($file_name = null, $append = false)
     {
         //判断是否为插件视图
         if (strpos($file_name, '.html') && APP_DIR) {
@@ -817,7 +819,19 @@ class View
 			$view_content = $this->load_view_file($view_file);
 			$this->create_compile_file($compile_file, $view_content);
 		}
-		include $compile_file;
+
+		if ($append == false) {
+            include_once $compile_file;
+            if (!empty($this->append)) {
+                foreach ($this->append as $html) {
+                    include_once $html;
+                }
+                $this->append = [];
+            }
+		} else {
+		    $this->append[] = $compile_file;
+        }
+
         if (defined('IS_FC_ADMIN')
             && defined('SYS_MODE') && SYS_MODE == 2
             && !IS_AJAX

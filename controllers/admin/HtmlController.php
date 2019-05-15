@@ -24,24 +24,30 @@ class HtmlController extends Admin {
     /**
 	 * 栏目页生成静态
 	 */
-	public function categoryAction() {
+	public function categoryAction()
+    {
 	    if ($this->isPostForm()) {
 			$sites = App::get_site();
 		    $catid = $this->post('catid');
 		    $isall = $catid ? 0 : 1;
 			$this->cache->delete('html_cats');
+
 			if ($this->site['SITE_EXTEND_ID']) {
                 $this->adminMsg(lang('a-sit-29', array('1' => $sites[$this->site['SITE_EXTEND_ID']]['SITE_NAME'])));
             }
+
 			foreach ($sites as $sid => $t) {
 				if ($t['SITE_EXTEND_ID'] && $t['SITE_EXTEND_ID'] == $this->siteid) {
 					$this->adminMsg(lang('a-sit-30', array('1' => $t['SITE_NAME'])));
 				}
 			}
-			$this->adminMsg(lang('a-cat-101'), url('admin/html/category', array('submit' => 1, 'catid' => $catid, 'isall' => $isall)), 0, 1, 2);
+
+			$this->adminMsg(lang('a-cat-101'), true, url('admin/html/category', array('submit' => 1, 'catid' => $catid, 'isall' => $isall)));
 		}
+
 		$submit	= (int)$this->get('submit');
-		if ($submit) {
+
+	    if ($submit) {
 			$catid = isset($catid) ? $catid : (int)$this->get('catid');
 			$isall = isset($isall) ? $isall : (int)$this->get('isall');
 			$page = $this->get('page') ? $this->get('page') : 1;
@@ -59,7 +65,7 @@ class HtmlController extends Admin {
 					$this->toCategory($cats[$key], $page, 0, $key, $count);
 				} else {
 				    $this->cache->delete('html_cats');
-				    $this->adminMsg(lang('a-con-107') . '(' . $count . ')', '', 0, 1, 1);
+				    $this->adminMsg(lang('a-con-107') . '(' . $count . ')', true);
 				}
 			} else {
 				if (empty($catid)) {
@@ -71,7 +77,7 @@ class HtmlController extends Admin {
 					$this->toCategory($catid, $page, 1, 0, $count);
 				} else {
 					$this->cache->delete('html_cats');
-				    $this->adminMsg(lang('a-con-107') . '(' . $count . ')', '', 0, 1, 1);
+				    $this->adminMsg(lang('a-con-107') . '(' . $count . ')');
 				}
 			}
 		} else {
@@ -83,41 +89,43 @@ class HtmlController extends Admin {
     /**
 	 * 内容页生成静态
 	 */
-	public function showAction() {
-		if ($this->isPostForm()) {
+	public function showAction()
+    {
+	    if ($this->isPostForm()) {
 			$this->cache->delete('html_cats');
-			$this->adminMsg(lang('a-cat-101'), url('admin/html/show', array('submit' => 1, 'catid' => $this->post('catid'), 'totime' => $this->post('totime'))), 0, 1, 2);
+			$this->adminMsg(lang('a-cat-101'), true, url('admin/html/show', array('submit' => 1, 'catid' => $this->post('catid'), 'totime' => $this->post('totime'))));
 		}
+
 		$submit = (int)$this->get('submit');
 		if ($submit) {
 			$page = $this->get('page') ? $this->get('page') : 1;
-			$catid = (int)$this->get('catid');
-			$totime	= (int)$this->get('totime');
-			$tohtml	= array();
-			$filecount	= (int)$this->get('filecount');
+			$catID = (int)$this->get('catid');
+			$toTime	= (int)$this->get('totime');
+			$toHtml	= array();
+			$fileCount	= (int)$this->get('filecount');
 			//分析能生成静态的栏目
-			if (empty($catid)) {
+			if (empty($catID)) {
 				foreach ($this->cats as $i=>$t) {
 					if ($t['setting']['url']['use'] == 1 && $t['setting']['url']['tohtml'] == 1) {
-						$tohtml[] = $i;
+						$toHtml[] = $i;
 					}
 				}
 			} else {
-				$array = $this->cats[$catid]['arrchilds'];
+				$array = $this->cats[$catID]['arrchilds'];
 				$array = explode(',', $array);
 				foreach ($array as $i) {
 					if ($this->cats[$i]['setting']['url']['use'] == 1 && $this->cats[$i]['setting']['url']['tohtml'] == 1) {
-						$tohtml[] = $i;
+						$toHtml[] = $i;
 					}
 				}
 			}
-			if (empty($tohtml)) {
+			if (empty($toHtml)) {
 				$this->cache->delete('html_cats');
 				$this->adminMsg(lang('a-mod-143'));
 			} else {
-				$cats = implode(',', $tohtml);
+				$cats = implode(',', $toHtml);
 				$this->cache->set('html_cats', $cats);
-				$this->toContent($cats, $page, $filecount, $totime);
+				$this->toContent($cats, $page, $fileCount, $toTime);
 			}
 		} else {
 	        $this->view->assign('category_select', $this->tree->get_tree($this->cats, 0));
@@ -128,12 +136,15 @@ class HtmlController extends Admin {
 	/**
 	 * 表单生成静态
 	 */
-	public function formAction() {
+	public function formAction()
+    {
 		if ($this->isPostForm()) {
-			$this->adminMsg(lang('a-cat-101'), url('admin/html/form', array('submit' => 1, 'mid' => $this->post('mid'))), 0, 1, 2);
+			$this->adminMsg(lang('a-cat-101'), true, url('admin/html/form', array('submit' => 1, 'mid' => $this->post('mid'))));
 		}
+
 		$submit	= (int)$this->get('submit');
 		$form = $this->get_model('form');
+
 		if ($submit) {
 			$mid = isset($mid) ? $mid : (int)$this->get('mid');
 			$page = $this->get('page') ? $this->get('page') : 1;
@@ -146,24 +157,27 @@ class HtmlController extends Admin {
 			}
 			$total = $this->content->count($form[$mid]['tablename'], 'id', '`status`=1', null, 3600);
 			$pagesize  = 10;
-			$totalpage = ceil($total/$pagesize); //该表单的总页数
-			$totalpage = $totalpage ? $totalpage : 1;
+			$totalPage = ceil($total/$pagesize); //该表单的总页数
+			$totalPage = $totalPage ? $totalPage : 1;
+
 			//生成
 			$data = $this->content->from($form[$mid]['tablename'])->page_limit($page, $pagesize)->where('`status`=1')->order('id ASC')->select();
 			if (empty($data)) {
-                $this->adminMsg(lang('a-con-107') . '(' . $count . ')', '', 0, 1, 1);
+                $this->adminMsg(lang('a-con-107') . '(' . $count . ')', true);
             }
 			foreach ($data as $t) {
 				if ($this->createForm($mid, $t)) {
                     $count++;
                 }
 			}
-			$nextpage = $page + 1;
-			if ($page >= $totalpage) {
-				$this->adminMsg(lang('a-con-107') . '(' . $count . ')', '', 0, 1, 1);
+
+			$nextPage = $page + 1;
+			if ($page >= $totalPage) {
+				$this->adminMsg(lang('a-con-107') . '(' . $count . ')', true);
 			} else {
-				$this->adminMsg('【' . $form[$mid]['modelname'] . '】(' . $page.'/' . $totalpage .')', url('admin/html/form',array('page' => $nextpage, 'mid' => $mid, 'submit' => 1,'count' => $count)), 3, 1, 2);
+				$this->adminMsg('【' . $form[$mid]['modelname'] . '】(' . $page.'/' . $totalPage .')', true, url('admin/html/form',array('page' => $nextPage, 'mid' => $mid, 'submit' => 1,'count' => $count)));
 			}
+
 		} else {
 	        $this->view->assign('list', $form);
 	        $this->view->display('admin/html_form');
@@ -194,27 +208,31 @@ class HtmlController extends Admin {
 		} else {
 			$size = file_put_contents(APP_ROOT . 'index.html', ob_get_clean(), LOCK_EX);
 		}
-		$this->adminMsg(lang('a-con-107') . '(' . formatFileSize($size) . ')', '', 3, 1, 1);
+		$this->adminMsg(lang('a-con-107') . '(' . formatFileSize($size) . ')', true);
 	}
 	
 	/**
 	 * 清理所有静态文件
 	 */
-	public function clearAction() {
+	public function clearAction()
+    {
 	    $submit	= (int)$this->get('submit');
+
 		if (empty($submit)) {
-            $this->adminMsg(lang('a-con-108'), url('admin/html/clear', array('submit' => 1)), 3, 1, 2);
+            $this->adminMsg(lang('a-con-108'), true, url('admin/html/clear', array('submit' => 1)));
         }
+
 	    @unlink('index.html');
-		$htmlfiles	= $this->cache->get('html_files');
-		if (empty($htmlfiles)) {
-            $this->adminMsg(lang('a-con-109'), '', 3, 1, 1);
+		$htmlFiles	= $this->cache->get('html_files');
+		if (empty($htmlFiles)) {
+            $this->adminMsg(lang('a-con-109'), true);
         }
-		$htmlfiles	= array_unique($htmlfiles);
+		$htmlFiles	= array_unique($htmlFiles);
+
 		$f = $d = 0;
-		if (is_array($htmlfiles)) {
+		if (is_array($htmlFiles)) {
 		    $dirs = array();
-		    foreach ($htmlfiles as $file) {
+		    foreach ($htmlFiles as $file) {
 			    $dir = dirname($file);
 			    $dirs[$dir] = 1;
 				if (@unlink($file)) {
@@ -228,90 +246,115 @@ class HtmlController extends Admin {
 				}
 			}
 		}
+
 		$this->cache->delete('html_files');
-	    $this->adminMsg(lang('a-con-110', array('1' => $d, '2' => $f)), '', 3, 1, 1);
+
+	    $this->adminMsg(lang('a-con-110', array('1' => $d, '2' => $f)), true);
 	}
 	
 	/**
 	 * 生成栏目
 	 */
-	private function toCategory($catid, $page, $isall, $key, $filecount) {
+	private function toCategory($catid, $page, $isall, $key, $fileCount) {
 	    $cat = $this->cats[$catid];
-	    $nextpage = 1;
-		$totalpage = 1;
-		$nextcatid = $catid;
+	    $nextPage = 1;
+		$totalPage = 1;
+		$nextCatid = $catid;
 		if ($cat['setting']['url']['tohtml'] == 1) {
 			if (($cat['child'] && $cat['categorytpl'] != $cat['listtpl']) || $cat['typeid'] == 2) {
 				if ($this->createCat($cat)) {
-                    $filecount++;
+                    $fileCount++;
                 }
 			} else {
 				$total = $this->content->_count(null, '`status`=1 AND `catid` IN (' . $cat['arrchilds'] . ')', null, 3600);
 				$pagesize = $cat['pagesize'];
-				$totalpage = ceil($total/$pagesize); //该栏目的总页数
-				$totalpage = $totalpage ? $totalpage : 1;
+				$totalPage = ceil($total/$pagesize); //该栏目的总页数
+				$totalPage = $totalPage ? $totalPage : 1;
 				if ($this->createCat($cat, $page)) {
-                    $filecount++;
+                    $fileCount++;
                 }
-				$nextpage = $page + 1;
+				$nextPage = $page + 1;
 			}
 		}
-		if ($page >= $totalpage) {
-			$nextpage = 1;
-			list($nextcatid, $key) = $this->nextCat($catid, $isall, $key); //跳转下一栏目
+		if ($page >= $totalPage) {
+			$nextPage = 1;
+			list($nextCatid, $key) = $this->nextCat($catid, $isall, $key); //跳转下一栏目
 		}
-	    $this->adminMsg('【' . $cat['catname'] . '】(' . $page . '/' . $totalpage . ')', url('admin/html/category', array('page' => $nextpage, 'catid' => $nextcatid, 'isall' => $isall, 'key' => $key, 'filecount' => $filecount, 'submit' => 1)), 0, 1, 2);
+
+		$msg = '【' . $cat['catname'] . '】(' . $page . '/' . $totalPage . ')';
+
+		$url = url('admin/html/category', array('page' => $nextPage, 'catid' => $nextCatid, 'isall' => $isall, 'key' => $key, 'filecount' => $fileCount, 'submit' => 1));
+
+	    $this->adminMsg($msg, true, $url);
 	}
-	
-	/**
-	 * 下一栏目信息
-	 */
-	private function nextCat($catid, $isall, $key) {
-	    if ($isall == 0) {
+
+    /**
+     * 下一栏目信息
+     * @param $catID
+     * @param $isAll
+     * @param $key
+     * @return array
+     */
+	private function nextCat($catID, $isAll, $key)
+    {
+	    if ($isAll == 0) {
 			$key++;
-			$nextcatid = $catid;
+			$nextCatID = $catID;
 		} else {
 			$_selected = 0;
-			$nextcatid = 200;
+			$nextCatID = 200;
 			foreach ($this->cats as $id=>$t) {
 				if ($_selected == 1) {
-					$nextcatid = $id;
+					$nextCatID = $id;
 					break;
 				}
-				if ($id == $catid) $_selected = 1;
+				if ($id == $catID) $_selected = 1;
 			}
 		}
-		return array($nextcatid, $key);
+
+		return array($nextCatID, $key);
 	}
-	
-	/**
-	 * 生成内容
-	 */
-	private function toContent($cats, $page, $filecount, $totime = 0) {
+
+    /**
+     * 生成内容
+     * @param $cats
+     * @param $page
+     * @param $fileCount
+     * @param int $toTime
+     */
+	private function toContent($cats, $page, $fileCount, $toTime = 0)
+    {
 		$where = '`catid` IN(' . $cats . ') and `status`=1';
-		if ($totime) {
-			$where .= ' and `updatetime` between ' . (int)strtotime('-' . $totime . ' day') . ' and ' . time();
+
+		if ($toTime) {
+			$where .= ' and `updatetime` between ' . (int)strtotime('-' . $toTime . ' day') . ' and ' . time();
 		}
+
 		$total = $this->content->_count(null, $where, null, 3600);
 		$pagesize = 50;
-	    $totalpage = ceil($total/$pagesize);
+
+	    $totalPage = ceil($total/$pagesize);
         $data = $this->content->page_limit($page, $pagesize)->where($where)->order('id ASC')->select();
-		if (empty($data)) {
+
+        if (empty($data)) {
 			$this->cache->delete('html_cats');
-			$this->adminMsg(lang('a-con-107') . '(' . $filecount . ')', '', 0, 1, 1);
+			$this->adminMsg(lang('a-con-107') . '(' . $fileCount . ')', true);
 		}
+
 		foreach ($data as $t) {
 		    if ($this->cats[$t['catid']]['setting']['url']['use'] == 1 && $this->cats[$t['catid']]['setting']['url']['tohtml'] == 1 && $this->cats[$t['catid']]['setting']['url']['show'] != '' && $this->createShow($t)) {
-				$filecount ++ ;
+				$fileCount ++ ;
 			}
         }
-        $this->adminMsg(lang('a-con-111') . " ($page/$totalpage)", url('admin/html/show', array('page' => $page+1, 'submit' => 1, 'filecount' => $filecount, 'totime' => $totime)), 0, 1, 2);
+
+        $this->adminMsg(lang('a-con-111') . " ($page/$totalPage)", url('admin/html/show', array('page' => $page+1, 'submit' => 1, 'filecount' => $fileCount, 'totime' => $toTime)), true);
 	}
 	
 	/**
 	 * 目录权限检查函数
 	 */
-	private function dir_mode_info() {
+	private function dir_mode_info()
+    {
         if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
             /* 测试文件 */
             $test_file = APP_ROOT . 'finecms_test.txt';

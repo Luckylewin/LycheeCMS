@@ -3,7 +3,9 @@
 class AttachmentController extends Common {
     
     private $dir;
-    
+
+    public $commonHtml = false;
+
     public function __construct()
     {
 		parent::__construct();

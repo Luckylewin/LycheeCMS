@@ -9,7 +9,8 @@ class RelatedlinkController extends Admin {
 		$this->relatedlink = $this->model('relatedlink');
 	}
 	
-	public function indexAction() {
+	public function indexAction()
+    {
 	    if ($this->post('submit_del') && $this->post('form') == 'del') {
 	        foreach ($_POST as $var=>$value) {
 	            if (strpos($var, 'del_') !== false) {
@@ -17,15 +18,19 @@ class RelatedlinkController extends Admin {
 	                $this->delAction($id, 1);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('relatedlink') . lang('success'), url('admin/relatedlink/'), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('relatedlink') . lang('success'),true, url('admin/relatedlink/'));
+
 	    } elseif ($this->post('submit_update') && $this->post('form') == 'update') {
 	        $data = $this->post('data');
 			if (empty($data)) $this->adminMsg(lang('a-tag-0'));
 			foreach ($data as $id=>$t) {
 			    $this->relatedlink->update($t, 'id=' . $id);
 			}
-			$this->adminMsg($this->getCacheCode('relatedlink') . lang('success'), url('admin/relatedlink/'), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('relatedlink') . lang('success'),true, url('admin/relatedlink/'));
 	    }
+
 	    $page     = (int)$this->get('page');
 		$page     = (!$page) ? 1 : $page;
 	    $pagelist = $this->instance('pagelist');
@@ -55,7 +60,7 @@ class RelatedlinkController extends Admin {
 	        if (!check::is_url($data['url'])) $this->adminMsg(lang('a-tag-13'));
 			$data['sort'] = intval($data['sort']);
 	        $this->relatedlink->insert($data);
-	        $this->adminMsg($this->getCacheCode('relatedlink') . lang('success'), url('admin/relatedlink'), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('relatedlink') . lang('success'),true, url('admin/relatedlink'));
 	    }
 	    $this->view->display('admin/relatedlink_add');
 	}
@@ -69,18 +74,21 @@ class RelatedlinkController extends Admin {
 	        if (empty($data['name']) || empty($data['url'])) $this->adminMsg(lang('a-tag-12'));
 	        if (!check::is_url($data['url'])) $this->adminMsg(lang('a-tag-13'));
 	        $this->relatedlink->update($data, 'id=' . $id);
-	        $this->adminMsg($this->getCacheCode('relatedlink') . lang('success'), url('admin/relatedlink'), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('relatedlink') . lang('success'), true, url('admin/relatedlink'));
 	    }
+
 	    $this->view->assign('data', $data);
 	    $this->view->display('admin/relatedlink_add');
 	}
 	
-    public function delAction($id=0, $all=0) {
-        if (!auth::check($this->roleid, 'relatedlink-del', 'admin')) $this->adminMsg(lang('a-com-0', array('1'=>'relatedlink', '2'=>'del')));
+    public function delAction($id=0, $all=0)
+    {
+        if (!auth::check($this->roleid, 'relatedlink-del', 'admin')) $this->adminMsg(lang('a-com-0', array('1'=>'relatedlink', '2'=>'del')), false);
+
 	    $all = $all ? $all : $this->get('all');
 		$id  = $id  ? $id  : (int)$this->get('id');
 	    $this->relatedlink->delete('id=' . $id);
-	    $all or $this->adminMsg($this->getCacheCode('relatedlink') . lang('success'), url('admin/relatedlink/index'), 3, 1, 1);
+	    $all or $this->adminMsg($this->getCacheCode('relatedlink') . lang('success'),true, url('admin/relatedlink/index'));
 	}
 	
 	public function importAction() {
@@ -108,20 +116,25 @@ class RelatedlinkController extends Admin {
 	                $k ++;
 	            }
 	        }
-	        $this->adminMsg($this->getCacheCode('relatedlink') . lang('a-tag-6', array('1'=>$i, '2'=>$k, '3'=>$j)), url('admin/relatedlink/index'), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('relatedlink') . lang('a-tag-6', array('1'=>$i, '2'=>$k, '3'=>$j)), true, url('admin/relatedlink/index'));
 	    }
+
 	    $this->view->display('admin/relatedlink_import');
 	}
 	
-	public function cacheAction($show=0) {
+	public function cacheAction($show=0)
+    {
 	    $data = $this->relatedlink->from(null, 'name,url')->order('sort DESC, id DESC')->select();
+
 		$list = array();
+
 		if ($data) {
 		    foreach ($data as $t) {
 			    $list[$t['name']] = $t;
 			}
 		}
-	    $this->cache->set('relatedlink', $list);
-	    $show or $this->adminMsg(lang('a-update'), url('admin/relatedlink'), 3, 1, 1);
+
+		$this->cache->set('relatedlink', $list);
+	    $show or $this->adminMsg(lang('a-update'),true,url('admin/relatedlink'));
 	}
 }

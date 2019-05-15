@@ -1,6 +1,7 @@
 <?php
 
-class LinkageController extends Admin {
+class LinkageController extends Admin
+{
     
     private $link;
 	private $level;
@@ -23,7 +24,7 @@ class LinkageController extends Admin {
 				$this->link->delete('keyid=' . $id);
 				$this->link->delete('id=' . $id);
 		    }
-			$this->adminMsg($this->getCacheCode('linkage') . lang('success'), url('admin/linkage/'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('linkage') . lang('success'),true, url('admin/linkage/'));
 		}
 		$this->view->assign('data', $this->link->where('keyid=0')->select());
 		$this->view->display('admin/linkage');
@@ -102,9 +103,12 @@ class LinkageController extends Admin {
 				'child' => 0,
 				'arrchilds' => '',
 			);
+
 			$this->link->insert($data);
-			$this->adminMsg($this->getCacheCode('linkage') . lang('success'), url('admin/linkage/'), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('linkage') . lang('success'),true, url('admin/linkage/'));
 		}
+
 	    $this->view->display('admin/linkage_add');
 	}
 	
@@ -123,8 +127,9 @@ class LinkageController extends Admin {
 				'site' => $this->post('site'),
 			);
 			$this->link->update($data, 'id='. $id);
-			$this->adminMsg($this->getCacheCode('linkage') . lang('success'), url('admin/linkage/'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('linkage') . lang('success'),true, url('admin/linkage/'));
 		}
+
 		$this->view->assign('data', $data);
 	    $this->view->display('admin/linkage_add');
 	}
@@ -159,7 +164,9 @@ class LinkageController extends Admin {
 				}
 			}
 			$this->link->update(array('child'=>1), 'id=' . $pid);
-			$this->adminMsg($this->getCacheCode('linkage') . lang('success'), url('admin/linkage/list', array('keyid'=>$keyid, 'parentid'=>$pid)), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('linkage') . lang('success'),true, url('admin/linkage/list', array('keyid'=>$keyid, 'parentid'=>$pid)));
+
 		}
 		//菜单列表
 		$tree    = $this->instance('linkage_tree');
@@ -195,8 +202,9 @@ class LinkageController extends Admin {
 			);
 			$this->link->update($sdata, 'id=' . $id);
 			$this->link->update(array('child'=>1), 'id=' . $this->post('parentid'));
-			$this->adminMsg($this->getCacheCode('linkage') . lang('success'), url('admin/linkage/list', array('keyid'=>$data['keyid'], 'parentid'=>$this->post('parentid'))), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('linkage') . lang('success'),true, url('admin/linkage/list', array('keyid'=>$data['keyid'], 'parentid'=>$this->post('parentid'))));
 		}
+
 		//菜单列表
 		$tree    = $this->instance('linkage_tree');
 		$linkage = $this->cache->get('linkage');
@@ -231,7 +239,7 @@ class LinkageController extends Admin {
 		}
 		$this->childnode = array();
 		$this->link->delete('id=' . $id);
-		$this->adminMsg($this->getCacheCode('linkage') . lang('success'), url('admin/linkage/list', array('keyid'=>$keyid)), 3, 1, 1);
+		$this->adminMsg($this->getCacheCode('linkage') . lang('success'),true, url('admin/linkage/list', array('keyid'=>$keyid)));
 	}
 	
 	/**
@@ -281,13 +289,14 @@ class LinkageController extends Admin {
 		}
 		$this->cache->set('linkage', $list);
 		$this->cache->set('linkage_' . $site_id, $site);
-	    $show or $this->adminMsg(lang('a-update') . '(' . runtime() . 's)', '', 3, 1, 1);
+	    $show or $this->adminMsg(lang('a-update') . '(' . runtime() . 's)',true);
 	}
 	
 	/**
 	 * 递归调出菜单所有子菜单
 	 */
-	private function getChildData($parentid, $data) {
+	private function getChildData($parentid, $data)
+    {
 		$child = array();
 		foreach ($data as $k=>$t) {
 		    //遍历是否有子菜单
@@ -322,7 +331,8 @@ class LinkageController extends Admin {
 	/**
 	 * 递归设置菜单所有子菜单组
 	 */
-	private function setChildData($parentid, $data) {
+	private function setChildData($parentid, $data)
+    {
 		foreach ($data as $k=>$t) {
 			if ($t['arrchilds']) {
 				$data[$k]['arrchilds'] = $this->getArrchildid($t['id'], $data);
@@ -334,20 +344,23 @@ class LinkageController extends Admin {
 	/**
 	 * 获取子菜单ID列表
 	 */
-	private function getArrchildid($id, $data) {
+	private function getArrchildid($id, $data)
+    {
 		$arrchildid = $id;
 		foreach ($data as $m) {
 			if ($m['parentid'] && $m['id'] != $id && $m['parentid'] == $id) {
 				$arrchildid .= ',' . $this->getArrchildid($m['id'], $data);
 			}
 		}
+
 		return $arrchildid;
 	}
 	
 	/*
 	 * 查询是否有子菜单
 	 */
-    private function isLastNode($keyid, $id) {
+    private function isLastNode($keyid, $id)
+    {
 		$result = $this->link->count('linkage', 'id', 'keyid=' . $keyid . ' AND parentid=' . $id);
 		return $result ? true : false;
 	}

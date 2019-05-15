@@ -12,7 +12,8 @@ class BlockController extends Admin {
 		$this->view->assign('type', $this->type);
 	}
     
-    public function indexAction() {
+    public function indexAction()
+    {
 		if ($this->post('submit_del')) {
 	        foreach ($_POST as $var=>$value) {
 	            if (strpos($var, 'del_')!==false) {
@@ -20,8 +21,9 @@ class BlockController extends Admin {
 	                $this->delAction($id, 1);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('block') . lang('success'), url('admin/block/'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('block') . lang('success'), true, url('admin/block/'));
 	    }
+
 	    $page     = (int)$this->get('page');
 		$page     = (!$page) ? 1 : $page;
 	    $pagelist = $this->instance('pagelist');
@@ -30,10 +32,12 @@ class BlockController extends Admin {
 	    $pagesize = isset($this->site['SITE_ADMIN_PAGESIZE']) && $this->site['SITE_ADMIN_PAGESIZE'] ? $this->site['SITE_ADMIN_PAGESIZE'] : 8;
 	    $data     = $this->block->where('site=' . $this->siteid)->page_limit($page, $pagesize)->order(array('id DESC'))->select();
 	    $pagelist = $pagelist->total($total)->url(url('admin/block/index', array('page'=>'{page}')))->num($pagesize)->page($page)->output();
+
 	    $this->view->assign(array(
 	        'list'     => $data,
 	        'pagelist' => $pagelist,
 	    ));
+
 	    $this->view->display('admin/block_list');
     }
     
@@ -45,7 +49,7 @@ class BlockController extends Admin {
             if (empty($data['name']) || empty($data['content'])) $this->adminMsg(lang('a-blo-4'));
 			$data['site'] = $this->siteid;
             $this->block->insert($data);
-            $this->adminMsg($this->getCacheCode('block') . lang('success'), url('admin/block'), 3, 1, 1);
+            $this->adminMsg($this->getCacheCode('block') . lang('success'),true, url('admin/block'));
         }
         $this->view->display('admin/block_add');
     }
@@ -62,18 +66,20 @@ class BlockController extends Admin {
             if (empty($data['name']) || empty($data['content'])) $this->adminMsg(lang('a-blo-4'));
 			$data['site'] = $this->siteid;
             $this->block->update($data, 'id=' . $id);
-            $this->adminMsg($this->getCacheCode('block') . lang('success'), url('admin/block'), 3, 1, 1);
+            $this->adminMsg($this->getCacheCode('block') . lang('success'), true, url('admin/block'));
         }
+
         $this->view->assign('data', $data);
         $this->view->display('admin/block_add');
     }
     
-    public function delAction($id=0, $all=0) {
+    public function delAction($id=0, $all=0)
+    {
         if (!auth::check($this->roleid, 'block-del', 'admin')) $this->adminMsg(lang('a-com-0', array('1'=>'block', '2'=>'del')));
 	    $id  = $id  ? $id  : (int)$this->get('id');
 	    $all = $all ? $all : $this->get('all');
 	    $this->block->delete('site=' . $this->siteid . ' AND id=' . $id);
-	    $all or $this->adminMsg($this->getCacheCode('block') . lang('success'), url('admin/block/index'), 3, 1, 1);
+	    $all or $this->adminMsg($this->getCacheCode('block') . lang('success'), true, url('admin/block/index'));
 	}
     
     public function cacheAction($show=0) {
@@ -83,7 +89,8 @@ class BlockController extends Admin {
 	        $data[$t['id']] = $t;
 	    }
 	    $this->cache->set('block', $data);
-	    $show or $this->adminMsg(lang('a-update'), '', 3, 1, 1);
+
+	    $show or $this->adminMsg(lang('a-update'), true);
 	}
     
     /**

@@ -39,19 +39,23 @@ class AuthController extends Admin {
             . "return " . var_export($data_role, true) . ";";
             $rs = file_put_contents($data_file, $content);
             if ($rs === false) {
-                $this->adminMsg(lang('dr009').$data_file);
+                return $this->adminMsg(lang('dr009').$data_file);
             }
-            $this->adminMsg($this->getCacheCode('auth') . lang('success'), url('admin/auth/list', array('roleid'=>$roleid)), 3, 1, 1);
+
+            return $this->adminMsg($this->getCacheCode('auth') . lang('success'), true, url('admin/auth/list', array('roleid'=>$roleid)));
         }
+
         $this->view->assign(array(
             'roleid' => $roleid,
             'role'   => $role,
             'data'   => $data_auth,
         ));
+
 		$this->view->display('admin/auth_list');
 	}
 	
-	public function addAction() {
+	public function addAction()
+    {
 	    if ($this->post('submit')) {
 	        $rolename = $this->post('rolename');
 			if (empty($rolename)) {
@@ -60,13 +64,14 @@ class AuthController extends Admin {
 	        $description = $this->post('description');
 	        $result = $this->user->set_role(0, $rolename, $description);
 	        if ($result == 1) {
-	            $this->adminMsg(lang('success'), url('admin/auth'), 3, 1, 1);
+	            $this->adminMsg(lang('success'),true, url('admin/auth'));
 	        } elseif ($result == 0) {
 	            $this->adminMsg(lang('a-aut-3'));
 	        } else {
 	            $this->adminMsg(lang('a-aut-4'));
 	        }
 	    }
+
 	    $this->view->display('admin/auth_add');
 	}
 	
@@ -80,17 +85,20 @@ class AuthController extends Admin {
 	        $description = $this->post('description');
 	        $result = $this->user->set_role($roleid, $rolename, $description);
 	        if ($result == 1) {
-	            $this->adminMsg(lang('success'), url('admin/auth'), 3, 1, 1);
+	            $this->adminMsg(lang('success'), true,url('admin/auth'));
 	        } elseif ($result == 0) {
 	            $this->adminMsg(lang('a-aut-3'));
 	        } else {
 	            $this->adminMsg(lang('a-aut-4'));
 	        }
 	    }
+
         $roleid = $this->get('roleid');
+
         if (!$roleid) {
             $this->adminMsg(lang('a-aut-0'));
         }
+
         $row = $this->user->roleinfo($roleid);
         $this->view->assign('data', $row);
 	    $this->view->display('admin/auth_add');
@@ -107,27 +115,33 @@ class AuthController extends Admin {
         if ($roleid == 1) {
             $this->adminMsg(lang('a-aut-6'));
         }
+
         $this->user->del_role($roleid);
-        $this->adminMsg($this->getCacheCode('auth') . lang('success'), url('admin/auth'), 3, 1, 1);
+        $this->adminMsg($this->getCacheCode('auth') . lang('success'), true, url('admin/auth'));
 	}
 	
-	public function cacheAction($show=0) {
+	public function cacheAction($show=0)
+    {
         //所有角色拥有的权限
         $data_role = require CONFIG_DIR . 'auth.role.ini.php';
         $role = $this->user->get_role_list();
-        $roleids = array(); //角色ID表
+        $roleIDArray = array(); //角色ID表
+
         foreach ($role as $t) {
-            $roleids[] = $t['roleid'];
+            $roleIDArray[] = $t['roleid'];
         }
         foreach ($data_role as $id=>$t) {
-            if (!in_array($id, $roleids)) {
+            if (!in_array($id, $roleIDArray)) {
                 //检查角色不存在就删除该角色的配置
                 unset($data_role[$id]);
             }
         }
+
         $content = "<?php" . PHP_EOL . "if (!defined('IN_FINECMS')) exit();" . PHP_EOL . PHP_EOL . "/**" . PHP_EOL . " * 用户权限配置信息" . PHP_EOL . " */" . PHP_EOL
         . "return " . var_export($data_role, true) . ";";
+
         file_put_contents(CONFIG_DIR . 'auth.role.ini.php', $content);
-        $show or $this->adminMsg(lang('a-update'), '', 3, 1, 1);
+
+        $show or $this->adminMsg(lang('a-update'), true);
 	}
 }

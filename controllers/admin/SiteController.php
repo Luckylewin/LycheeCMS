@@ -43,7 +43,7 @@ class SiteController extends Admin {
 				foreach ($ids as $id) {
 					$this->delAction($id, 1);
 				}
-				$this->adminMsg(lang('success'), purl('site/index'), 3, 1, 1);
+				$this->adminMsg(lang('success'),true, purl('site/index'));
 			}
 		}
 	    $this->view->assign(array(
@@ -98,7 +98,8 @@ class SiteController extends Admin {
 					}
 				}
 			}
-			$this->adminMsg(lang('success'), purl('site/index'), 3, 1, 1);
+			$this->adminMsg(lang('success'),true,purl('site/index'));
+
 		}
 		$this->view->assign(array(
 			'site' => App::get_site(),
@@ -130,7 +131,7 @@ class SiteController extends Admin {
 			$this->set_site_url($site);
 			//保存网站信息配置文件
 			$this->set_site_cfg($site[$id], $id);
-			$this->adminMsg(lang('success'), purl('site/index'), 3, 1, 1);
+			$this->adminMsg(lang('success'),true, purl('site/index'));
 		}
 		$this->view->assign(array(
 			'id' => $id,
@@ -197,7 +198,7 @@ class SiteController extends Admin {
 		unset($data[$site]);
 		$this->set_site_url($data);
 		@unlink(APP_ROOT . 'cache/index/' . $site . '.html');
-		$show or $this->adminMsg(lang('success'), purl('site/index'), 3, 1, 1);
+		$show or $this->adminMsg(lang('success'), true, purl('site/index'));
 	}
 	
 	/**
@@ -229,8 +230,9 @@ class SiteController extends Admin {
             }
             $body .= PHP_EOL . ");";
             file_put_contents(CONFIG_DIR . 'site' . DIRECTORY_SEPARATOR . $siteid . '.ini.php', $body);
-            $this->adminMsg(lang('success'), purl('site/config', array('id' => $siteid, 'typeid' => $this->post('typeid'))), 3, 1, 1);
+            $this->adminMsg(lang('success'),true, purl('site/config', array('id' => $siteid, 'typeid' => $this->post('typeid'))));
         }
+
         //模板风格
 		$theme = '';
         $file_list = file_list::get_file_list(VIEW_DIR);

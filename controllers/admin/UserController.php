@@ -75,7 +75,7 @@ class UserController extends Admin {
 
             if($count) {
                 file_put_contents(APP_ROOT.'cache\member.lock',date('Y-m-d h:i:s',time()).';'.$options['domain']);
-                $this->adminMsg(lang('success') . ',转移' . $count . '条会员数据！', url('admin/index/main'), 3, 1, 1);
+                $this->adminMsg(lang('success') . ',转移' . $count . '条会员数据！', true, url('admin/index/main'));
             }
 
         }
@@ -130,8 +130,10 @@ class UserController extends Admin {
 	        );
 			$data['salt']     = substr(md5(time()), 0, 10);
 	        $data['password'] = md5(md5($this->post('password')) . $data['salt'] . md5($this->post('password')));
+
 	        $this->user->insert($data);
-	        $this->adminMsg(lang('success'), url('admin/user/index/'), 3, 1, 1);
+
+	        $this->adminMsg(lang('success'),true, url('admin/user/index/'));
 	    }
 
 	    return $this->render(array(
@@ -165,8 +167,10 @@ class UserController extends Admin {
 	        );
 
 	        if ($this->post('password')) $data['password'] = md5(md5($this->post('password')) . $user['salt'] . md5($this->post('password')));
+
 	        $this->user->update($data, 'userid=' . $user_id);
-	        $this->adminMsg(lang('success'), url('admin/user/index/'), 3, 1, 1);
+
+	        return $this->adminMsg(lang('success'),true, url('admin/user/index/'));
 	    }
 	    $user_id = (int)$this->get('userid');
 	    $user   = $this->user->find($user_id);
@@ -198,10 +202,15 @@ class UserController extends Admin {
 				'usermenu' => array2string($menu),
 	        );
 	        if ($this->post('password')) $data['password'] = md5(md5($this->post('password')) . $user['salt'] . md5($this->post('password')));
+
 	        $this->user->update($data, 'userid=' . $userid);
-	        $this->adminMsg(lang('success'), url('admin/user/ajaxedit/'), 3, 1, 1);
+
+	        return $this->adminMsg(lang('success'),true, url('admin/user/ajaxedit/'));
 	    }
-	    if (empty($user)) $this->adminMsg(lang('a-use-3'));
+
+	    if (empty($user)) {
+            $this->adminMsg(lang('a-use-3'), false);
+        }
 
 	    return $this->render(array(
             'data' => $user,
@@ -215,10 +224,13 @@ class UserController extends Admin {
      */
 	public function delAction()
     {
-	    $userid = (int)$this->get('userid');
-	    if (empty($userid)) $this->adminMsg(lang('a-use-3'));
-	    if ($this->userinfo['userid'] == $userid) $this->adminMsg(lang('a-use-4'));
-	    $this->user->delete('userid=' . $userid);
-	    $this->adminMsg(lang('success'), url('admin/user/index/'), 3, 1, 1);
+	    $userID = (int)$this->get('userid');
+	    if (empty($userID)) $this->adminMsg(lang('a-use-3'));
+	    if ($this->userinfo['userid'] == $userID) {
+            return $this->adminMsg(lang('a-use-4'));
+        }
+
+	    $this->user->delete('userid=' . $userID);
+	    return $this->adminMsg(lang('success'), true ,url('admin/user/index/'));
 	}
 }

@@ -6,7 +6,8 @@ class ContentController extends Admin {
     private $table;
 	private $verify;
     
-    public function __construct() {
+    public function __construct()
+    {
 		parent::__construct();
 		$this->tree = $this->instance('tree');
         $this->table = 'content_' . $this->siteid;
@@ -49,7 +50,7 @@ class ContentController extends Admin {
 					$success ++;
 	            }
 	        }
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+			$this->adminMsg(lang('success') . '(' . $success . ')', true);
 	    } elseif ($this->post('submit_status_3') && $this->post('form') == 'status_3') {	//标记回收站
 			$success = 0;
 	        foreach ($_POST as $var => $value) {
@@ -61,7 +62,9 @@ class ContentController extends Admin {
 					$success ++;
 	            }
 	        }
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+
+	        $this->adminMsg(lang('success') . '(' . $success . ')', true);
+
 	    } elseif ($this->post('submit_status_5') && $this->post('form') == 'status_5') {	//微信推送
 			$success = 0;
             $weixint = '';
@@ -74,7 +77,7 @@ class ContentController extends Admin {
 	            }
 	        }
             $this->content->post_weixin(trim($weixint, ','),$this->input->get('catid'));
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+			$this->adminMsg(lang('success') . '(' . $success . ')', true);
 	    } elseif ($this->post('form') == 'del') {	//删除操作
 	        foreach ($_POST as $var => $value) {
 	            if (strpos($var, 'del_') !== false) {
@@ -104,8 +107,9 @@ class ContentController extends Admin {
 					}
 	            }
 	        }
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+			$this->adminMsg(lang('success') . '(' . $success . ')',true);
 	    }
+
 		//参数接收
 	    $kw = $kw ? $kw : $this->get('kw');
 	    $page = (int)$this->get('page') ? (int)$this->get('page') : 1;
@@ -238,7 +242,7 @@ class ContentController extends Admin {
 					$success ++;
 	            }
 	        }
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+			$this->adminMsg(lang('success') . '(' . $success . ')', true);
 	    } elseif ($this->post('submit_status_0') && $this->post('form') == 'status_0') {	//标记未审核
 			$success = 0;
 	        foreach ($_POST as $var => $value) {
@@ -251,7 +255,9 @@ class ContentController extends Admin {
 					$success ++;
 	            }
 	        }
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+
+			$this->adminMsg(lang('success') . '(' . $success . ')', true);
+
 	    } elseif ($this->post('submit_status_2') && $this->post('form') == 'status_2') {	//标记拒绝
 			$success = 0;
 	        foreach ($_POST as $var => $value) {
@@ -264,8 +270,10 @@ class ContentController extends Admin {
 					$success ++;
 	            }
 	        }
-			$this->adminMsg(lang('success') . '(' . $success . ')', '', 3, 1, 1);
+
+	        $this->adminMsg(lang('success') . '(' . $success . ')', true);
 	    }
+
 		//参数接收
 	    $kw  = $kw ? $kw : $this->get('kw');
 	    $page = (int)$this->get('page') ? (int)$this->get('page') : 1;
@@ -403,8 +411,10 @@ class ContentController extends Admin {
 	        if ($this->site['SITE_MAP_AUTO'] == true) {
                 $this->sitemap();
             }
-	        $this->adminMsg(lang('success'), ($this->post('backurl') ? $this->post('backurl') : url('admin/content/verify')), 3, 1, 1);
+
+	        $this->adminMsg(lang('success'), true, ($this->post('backurl') ? $this->post('backurl') : url('admin/content/verify')));
 	    }
+
 	    $this->view->assign(array(
 	        'data' => $data,
 			'model' => $model[$modelid],
@@ -413,6 +423,7 @@ class ContentController extends Admin {
 	        'category' => $this->tree->get_model_tree($this->cats, 0, $catid, '|-', $modelid, null, null, $this->userinfo['roleid']),
 	        'data_fields' => $this->getFields($fields, $data),
 	    ));
+
 	    $this->view->display('admin/content_add');
 	}
 	
@@ -428,7 +439,7 @@ class ContentController extends Admin {
         }
 		$this->content->update(array('status' => 1), 'id=' . $id);
 		$this->verify->delete('id=' . $id);
-		$all or $this->adminMsg(lang('success'), '', 3, 1, 1);
+		$all or $this->adminMsg(lang('success'), true);
 	}
 	
 	/**
@@ -480,6 +491,7 @@ class ContentController extends Admin {
                 if($this->checkRepeat($t,1)) $this->adminMsg(lang('a-tag-ex-2'));
             }
 			*/
+
             $this->postEvent($data, 'before', 'admin');	//发布前事件
 	        $result = $this->content->set(0, $model[$modelid]['tablename'], $data);
 	        if (!is_numeric($result)) {
@@ -489,12 +501,16 @@ class ContentController extends Admin {
 			$this->postEvent($data, 'later', 'admin');	//发布后事件
 	        if ($this->site['SITE_MAP_AUTO'] == true) {
                 $this->sitemap();
-            }
+
+	        }
 			$this->toHtml($data);
 			$this->setPosition($data['position'], $result, $data);
-			$msg = '<a href="' . url('admin/content/add', array('catid' => $data['catid'], 'modelid' => $modelid)) . '" style="font-size:14px;">' . lang('a-con-7') . '</a>&nbsp;&nbsp;<a href="' . url('admin/content/index', array('catid' => $data['catid'], 'modelid' => $modelid)) . '" style="font-size:14px;">' . lang('a-con-8') . '</a>';
-	        $this->adminMsg(lang('a-con-9') . '<div style="padding-top:10px;">' . $msg . '</div>', '', 3, 0, 1);
+
+			// $msg = '<a href="' . url('admin/content/add', array('catid' => $data['catid'], 'modelid' => $modelid)) . '" style="font-size:14px;">' . lang('a-con-7') . '</a>&nbsp;&nbsp;<a href="' . url('admin/content/index', array('catid' => $data['catid'], 'modelid' => $modelid)) . '" style="font-size:14px;">' . lang('a-con-8') . '</a>';
+
+			$this->adminMsg(lang('a-con-9'), true);
 	    }
+
 		$position = $this->model('position');
 	    $data_fields = $this->getFields($fields, array());
 	    $this->view->assign(array(
@@ -506,6 +522,7 @@ class ContentController extends Admin {
 	        'category' => $this->tree->get_model_tree($this->cats, 0, $this->get('catid'), '|-', $modelid, null, null, $this->userinfo['roleid']),
 	        'data_fields' => $data_fields
 	    ));
+
 	    $this->view->display('admin/content_add');
 	}
 
@@ -621,7 +638,7 @@ class ContentController extends Admin {
             }
 			$this->toHtml($data);
 			$this->setPosition($data['position'], $result, $data, $posi);
-	        $this->adminMsg(lang('success'), ($this->post('backurl') ? $this->post('backurl') : url('admin/content/index', array('modelid' => $modelid, 'catid' => $catid))), 3, 1, 1);
+	        $this->adminMsg(lang('success'),true, ($this->post('backurl') ? $this->post('backurl') : url('admin/content/index', array('modelid' => $modelid, 'catid' => $catid))));
 	    }
 	    //附表内容
 	    $table = $this->model($model[$modelid]['tablename']);
@@ -665,7 +682,7 @@ class ContentController extends Admin {
             $this->adminMsg(lang('a-cat-100', array('1' => $this->userinfo['rolename'])));
         }
 	    $this->content->del($id, $catid);
-	    $all or $this->adminMsg(lang('success'), $back, 3, 1, 1);
+	    $all or $this->adminMsg(lang('success'),true, $back);
 	}
 	
 	/**

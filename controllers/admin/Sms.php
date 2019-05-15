@@ -37,7 +37,7 @@ class Sms extends Admin {
 			if (!$size) {
                 $this->adminMsg('config目录无权限写入');
             }
-			$this->adminMsg('保存成功', url('admin/sms/index'), 3, 1, 1);
+			$this->adminMsg('保存成功',true, url('admin/sms/index'));
 		}
 
 		$this->template->assign(array(

@@ -19,10 +19,12 @@ class AdminController extends Plugin {
 		}
     }
 	
-	public function indexAction() {
+	public function indexAction()
+    {
 	    if ($this->isPostForm()) {
-		    $this->adminMsg('正在为您升级，请不要关闭浏览器 ...', purl('admin/upgrade'), 3, 1, 1);
+		    $this->adminMsg('正在为您升级，请不要关闭浏览器 ...', true,purl('admin/upgrade'));
 		}
+
 	    $data = $this->getFileData();
 		$this->assign('check', $this->dir_mode_info());
 	    $this->assign('data', $data);
@@ -82,7 +84,7 @@ class AdminController extends Plugin {
 			}
 			//检查update控制器
 			if (is_file(CONTROLLER_DIR . 'UpdateController.php')) $this->adminMsg('正在升级数据，请稍候...', url('update'), 2, 1, 2);
-			$this->adminMsg('升级完成！', purl('admin'), 3, 1, 1);
+			$this->adminMsg('升级完成！',true, purl('admin'));
 		} else {
 		    $this->adminMsg('远程数据不存在', purl('admin'));
 		}

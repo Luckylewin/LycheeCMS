@@ -101,7 +101,7 @@ class MemberController extends Admin {
 					$data['filesize'] = intval($data['filesize']);
 					if (empty($data['name'])) $this->adminMsg(lang('a-mem-1'));
 					$this->mgroup->insert($data);
-					$this->adminMsg($this->getCacheCode('member') . lang('success'), url('admin/member/group/'), 3, 1, 1);
+					$this->adminMsg($this->getCacheCode('member') . lang('success'), true, url('admin/member/group/'));
 				}
 			    $this->view->display('admin/member_group_add');
 				break;
@@ -111,7 +111,7 @@ class MemberController extends Admin {
 				    $data = $this->post('data');
 					if (empty($data['name'])) $this->adminMsg(lang('a-mem-1'));
 					$this->mgroup->update($data, 'id=' . $id);
-					$this->adminMsg($this->getCacheCode('member') . lang('success'), url('admin/member/group/'), 3, 1, 1);
+					$this->adminMsg($this->getCacheCode('member') . lang('success'), true, url('admin/member/group/'));
 				}
 				$this->view->assign('data', $this->mgroup->find($id));
 			    $this->view->display('admin/member_group_add');
@@ -122,7 +122,7 @@ class MemberController extends Admin {
 			case 'delete':
 			    $id = (int)$this->get('id');
 			    $this->mgroup->delete('id=' . $id);
-				$this->adminMsg($this->getCacheCode('member') . lang('success'), url('admin/member/group/'), 3, 1, 1);
+				$this->adminMsg($this->getCacheCode('member') . lang('success'), true, url('admin/member/group/'));
 				break;
 		    default:
 			    if ($this->post('submit_order') && $this->post('form')=='order') {
@@ -163,7 +163,8 @@ class MemberController extends Admin {
 	/*
 	 * 配置信息
 	 */
-    public function configAction() {
+    public function configAction()
+    {
         $type   = $this->get('type') ? $this->get('type') : 'reg';
 	    $member = $this->cache->get('member');
         if ($this->post('submit')) {
@@ -195,22 +196,23 @@ class MemberController extends Admin {
 				if (!file_put_contents($file, $s)) $this->adminMsg(lang('a-mem-2', array('1' => $file)));
 			}
             $this->cache->set('member', array_merge($data, array('oauth' => $oauth)));
-            $this->adminMsg(lang('success'), url('admin/member/config', array('type' => $type)), 3, 1, 1);
+            $this->adminMsg(lang('success'), true,url('admin/member/config', array('type' => $type)));
         }
         $this->view->assign(array(
 			'type'        => $type,
             'data'        => $member,
-            'string'      => $string,
 			'membermodel' => $this->membermodel,
 			'membergroup' => $this->membergroup
         ));
+
         $this->view->display('admin/member_config');
 	}
 	
 	/*
 	 * 修改资料
 	 */
-	public function editAction() {
+	public function editAction()
+    {
 	    $id     = (int)$this->get('id');
 		$member = $this->member->find($id);
 		if (empty($member)) $this->adminMsg(lang('a-mem-3'));
@@ -231,8 +233,9 @@ class MemberController extends Admin {
 				$data['id'] = $id;
 				$info->insert($data); //新增附表内容
 			}
-			$this->adminMsg(lang('success'), url('admin/member/edit', array('id' => $id)), 3, 1, 1);
+			$this->adminMsg(lang('success'),true, url('admin/member/edit', array('id' => $id)));
 		}
+
 		$fields   = $this->membermodel[$member['modelid']]['fields'];
 		$count    = array();
 		$count[0] = $this->member->count('member', null, '1');
@@ -240,6 +243,7 @@ class MemberController extends Admin {
 		$count[2] = $this->member->count('member', null, 'status=0');
 		$oauth    = $this->model('oauth');
 		$odata    = $oauth->where('username=?', $member['username'])->select();
+
 		$this->view->assign(array(
 			'id'			=> $id,
 			'info'			=> $_data,
@@ -250,6 +254,7 @@ class MemberController extends Admin {
 			'oauth'			=> $odata,
 			'data_fields'	=> $this->getFields($fields, $_data)
         ));
+
         $this->view->display('admin/member_edit');
 	}
 	
@@ -311,18 +316,30 @@ class MemberController extends Admin {
 						}
 					}
 				}
-				$this->adminMsg(lang('a-mem-7', array('1' => $y, '2' => $n)), url('admin/member/index'), 3, 1, 1);
+
+				$this->adminMsg(lang('a-mem-7', array('1' => $y, '2' => $n)), true, url('admin/member/index'));
+
 			} else {
 			    //注册
 				$data   = $this->post('data');
-				if (empty($data['username']) || empty($data['password']) || empty($data['email'])) $this->adminMsg(lang('a-mem-8'));
-				if (!$this->is_username($data['username'])) $this->adminMsg(lang('a-mem-9'));
-				if (!check::is_email($data['email'])) $this->adminMsg(lang('a-mem-10'));
+				if (empty($data['username']) || empty($data['password']) || empty($data['email'])) {
+                    $this->adminMsg(lang('a-mem-8'));
+                }
+
+				if (!$this->is_username($data['username'])) {
+                    $this->adminMsg(lang('a-mem-9'));
+                }
+
+				if (!check::is_email($data['email'])) {
+                    $this->adminMsg(lang('a-mem-10'));
+                }
+
 				$row    = $this->member->getOne('username=?', $data['username'], 'id');
 				if ($row) $this->adminMsg(lang('a-mem-11'));
 				$row    = $this->member->getOne('email=?', $data['email'], 'id');
 				if ($row) $this->adminMsg(lang('a-mem-12'));
 				$salt   = substr(md5(rand(0, 999)), 0, 10);
+
 				$insert = array(
 					'salt'     => $salt,
 					'email'    => $data['email'],
@@ -341,9 +358,12 @@ class MemberController extends Admin {
 				    'username' => $data['username'],
 					'password' => md5(md5($data['password']) . $salt . md5($data['password']))
 				);
+
 				if ($this->member->insert($insert)) {
-				    $this->adminMsg(lang('success'), url('admin/member'), 3, 1, 1);
+
+				    $this->adminMsg(lang('success'), true, url('admin/member'));
 				} else {
+
 				    $this->adminMsg(lang('a-mem-13'));
 				}
 			}
@@ -352,16 +372,13 @@ class MemberController extends Admin {
 		$count[0] = $this->member->count('member', null, '1');
 		$count[1] = $this->member->count('member', null, 'status=1');
 		$count[2] = $this->member->count('member', null, 'status=0');
-		if ($this->memberconfig['uc_use'] == 1) {
-			if (is_file(EXTENSION_DIR . 'ucenter' . DIRECTORY_SEPARATOR . 'config.inc.php')) {
-				include EXTENSION_DIR . 'ucenter' . DIRECTORY_SEPARATOR . 'config.inc.php';
-			}
-		}
+
 		$this->view->assign(array(
 			'uc'    => $this->memberconfig['uc_use'],
 			'model' => $this->membermodel,
 			'count' => $count
         ));
+
         $this->view->display('admin/member_reg');
 	}
 	
@@ -424,7 +441,7 @@ class MemberController extends Admin {
 						   }
 						}
 					}
-					$this->adminMsg(lang('a-mem-20') . '(' . $sendtotal . ')', url('admin/member/pms'), 3, 1, 1);
+					$this->adminMsg(lang('a-mem-20') . '(' . $sendtotal . ')', true, url('admin/member/pms'));
 				}
 				$this->view->assign(array(
 					'model' => $this->membermodel,
@@ -524,7 +541,7 @@ class MemberController extends Admin {
 		//删除会员附件目录
 		$path = 'uploadfiles/member/' . $id . '/';
 		if (file_exists($path)) $this->delDir($path);
-		$this->adminMsg(lang('success'), url('admin/member'), 3, 1, 1);
+		$this->adminMsg(lang('success'), true, url('admin/member'));
 	}
 	
 	/**
@@ -537,7 +554,7 @@ class MemberController extends Admin {
 			$cache[$t[id]] = $t;
 		}
 		$this->cache->set('membergroup', $cache);
-		$show or $this->adminMsg(lang('a-update'), url('admin/member/group/'), 3, 1, 1);
+		$show or $this->adminMsg(lang('a-update'), true,url('admin/member/group/'));
 	}
 	
 	/*
@@ -566,8 +583,9 @@ class MemberController extends Admin {
 					$cfg	= array_merge($model['setting'], $cfg);
 					$model	= $this->model('model');
 					$model->update(array('setting'	=> array2string($cfg)), 'modelid=' . $mid);
-					$this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/member/extend', array('modelid'=>$mid,'type'=>'set','touserid'=>$touser,'typeid'=>$this->post('typeid'))), 3, 1, 1);
+					$this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/member/extend', array('modelid'=>$mid,'type'=>'set','touserid'=>$touser,'typeid'=>$this->post('typeid'))));
 				}
+
 				$tpl		= 'admin/member_extend_config';
 				$list_code	= '{list table=' . $model['tablename'] . ' order=updatetime num=10}' . PHP_EOL
 				. 'id：{$t[\'id\']}' . PHP_EOL
@@ -601,7 +619,7 @@ class MemberController extends Admin {
 					$this->checkFields($this->model['fields'], $data, 1);
 					$data['updatetime'] = time();
 					$table->update($data, 'id=' . $id);
-					$this->adminMsg(lang('success'), '', 3, 1, 1);
+					$this->adminMsg(lang('success'), true);
 				}
 				$this->view->assign(array(
 					'data'  	=> $data,

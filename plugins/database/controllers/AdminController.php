@@ -18,7 +18,8 @@ class AdminController extends Plugin {
     /*
 	 * 数据操作
 	 */
-    public function indexAction() {
+    public function indexAction()
+    {
 		if ($this->isPostForm()) {
 			$tables    = $this->post('table');
 		    $list_form = $this->post('list_form');
@@ -27,7 +28,7 @@ class AdminController extends Plugin {
 					$this->content->query($list_form . ' table ' . $table);
 				}
 			}
-		    $this->adminMsg('操作成功', purl('admin'), 3, 1, 1);
+		    $this->adminMsg('操作成功', true,purl('admin'));
 		}
 		$this->assign(array(
 		    'data' => $this->getTables(),
@@ -64,7 +65,8 @@ class AdminController extends Plugin {
 	/*
 	 * 数据恢复
 	 */
-    public function importAction() {
+    public function importAction()
+    {
 		$dir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'bakup' . DIRECTORY_SEPARATOR;
 		$path = $this->get('path');
 		if ($path && is_dir($dir . $path)) {
@@ -79,7 +81,7 @@ class AdminController extends Plugin {
 					$this->delDir($dir . $path);
 				}
 			}
-		    $this->adminMsg('操作成功', purl('admin/import'), 3, 1, 1);
+		    $this->adminMsg('操作成功',true, purl('admin/import'));
 		}
 		if (!is_dir($dir)) mkdir($dir, 0777);
 		$data = file_list::get_file_list($dir); //扫描备份目录
@@ -114,12 +116,14 @@ class AdminController extends Plugin {
     public function executeAction() {
 		if ($this->isPostForm()) {
 			$sql = stripslashes($_POST['sql']);
-			if (empty($sql)) $this->adminMsg('内容为空，不能执行', purl('admin/execute'));
+			if (empty($sql)) $this->adminMsg('内容为空，不能执行', false, purl('admin/execute'));
+
 			$cfg = Controller::load_config('database');
 			$sql = str_replace("{pre}", $cfg['prefix'], $sql);
+
 			if (strtoupper(substr($sql, 0, 6)) != 'SELECT') {
 			    $result = $this->sql_execute($sql);
-			    $this->adminMsg('操作成功，影响' . $result .'条记录', '', 3, 1, 1);
+			    $this->adminMsg('操作成功，影响' . $result .'条记录', true);
 			}
 		    $data = $this->content->execute($sql);
 		    $this->assign('data', $data);
@@ -131,25 +135,28 @@ class AdminController extends Plugin {
 	/*
 	 * 修复表
 	 */
-    public function repairAction() {
+    public function repairAction()
+    {
 		$name = $this->get('name');
 		$this->content->query("repair table $name");
-		$this->adminMsg('操作成功', purl('admin'), 3, 1, 1);
+		$this->adminMsg('操作成功',true, purl('admin'));
     }
 	
 	/*
 	 * 优化表
 	 */
-    public function optimizeAction() {
+    public function optimizeAction()
+    {
 		$name = $this->get('name');
 		$this->content->query("optimize table $name");
-		$this->adminMsg('操作成功', purl('admin'), 3, 1, 1);
+		$this->adminMsg('操作成功',true, purl('admin'));
     }
 	
 	/*
 	 * 数据表结构
 	 */
-    public function tableAction() {
+    public function tableAction()
+    {
 		$name = $this->get('name');
 		$data = $this->content->execute("SHOW CREATE TABLE $name", false);
 		echo '<div class="table-list"><xmp>' . $data['Create Table'] . '</xmp></div>';
@@ -158,7 +165,8 @@ class AdminController extends Plugin {
 	/*
 	 * 取当前数据库中的所有表信息
 	 */
-	private function getTables() {
+	private function getTables()
+    {
 	    $data = $this->content->execute('SHOW TABLE STATUS FROM `' . $this->content->dbname . '`');
 		foreach ($data as $key=>$t) {
 		    $data[$key]['fc'] = substr($t['Name'], 0, strlen($this->content->prefix)) != $this->content->prefix ? 0 : 1;
@@ -246,46 +254,56 @@ class AdminController extends Plugin {
 			file_put_contents($bakfile, $tabledump);
 			@chmod($bakfile, 0777);
 			$url = purl('admin/export', array('size' => $sizelimit, 'action' => $action, 'fileid' => $fileid, 'random' => $random, 'tableid' => $tableid, 'startfrom' => $startfrom));
-			$this->adminMsg("备份#$filename", $url, 0, 1, 2);
+			$this->adminMsg("备份#$filename", true, $url);
+
 		} else {
 			file_put_contents($bakfile_path . 'index.html', '');
 			file_put_contents($bakfile_path . 'version.txt', CMS_VERSION);
 		    $this->cache->delete('bakup_tables');
-		    $this->adminMsg("备份完成", purl('admin/export'), 3, 1, 1);
+		    $this->adminMsg("备份完成", true,purl('admin/export'));
 		}
 	}
-	
-	/**
-	 * 数据库恢复
-	 */
-	private function importdb($path, $fileid = 1) {
+
+    /**
+     * 数据库恢复
+     * @param $path
+     * @param int $fileID
+     */
+	private function importdb($path, $fileID = 1)
+    {
 		$dir  = APP_ROOT . 'cache' . DIRECTORY_SEPARATOR . 'bakup' . DIRECTORY_SEPARATOR;
-	    $fid  = $fileid ? $fileid : 1;
+	    $fid  = $fileID ? $fileID : 1;
 		if (is_file($dir . $path . DIRECTORY_SEPARATOR . 'version.txt')) {
 			$version = file_get_contents($dir . $path . DIRECTORY_SEPARATOR . 'version.txt');
 			if ($version  != CMS_VERSION) $this->adminMsg("备份版本($version)与当前版本(" . CMS_VERSION . ")不一致");
 		}
+
 		$data = scandir($dir . $path); //扫描备份目录
 	    $list = array();
+
 	    foreach ($data as $t) {
 	        if (is_file($dir . $path . DIRECTORY_SEPARATOR . $t) && substr($t, -3) == 'sql') {
 			    $id = substr(strrchr($t, '_'), 1, -4);
 	            $list[$id] = $t;
 	        }
 	    }
-		if (!isset($list[$fid])) $this->adminMsg('恢复完毕', purl('admin/import'), 3, 1, 1);
+		if (!isset($list[$fid])) $this->adminMsg('恢复完毕',true, purl('admin/import'));
+
 		$file = $list[$fid];
 		$sql  = file_get_contents($dir . $path . DIRECTORY_SEPARATOR .$file);
 		$this->sql_execute($sql);
 		$fid++;
-		$this->adminMsg('恢复文件 ' . $file, purl('admin/import', array('path' => $path, 'fileid' => $fid)), 1, 1, 2);
+
+		$this->adminMsg('恢复文件 ' . $file,true, purl('admin/import', array('path' => $path, 'fileid' => $fid)));
 	}
-	
-	/**
-	 * 执行SQL
-	 * @param  $sql
-	 */
- 	private function sql_execute($sql) {
+
+    /**
+     * 执行SQL
+     * @param $sql
+     * @return int
+     */
+ 	private function sql_execute($sql)
+    {
 	    $sqls   = $this->sql_split($sql);
 		$result = 0;
 		if(is_array($sqls)) {
@@ -302,7 +320,8 @@ class AdminController extends Plugin {
 		return $result;
 	}
 	
- 	private function sql_split($sql) {
+ 	private function sql_split($sql)
+    {
 		$sql = str_replace("\r", "\n", $sql);
 		$ret = array();
 		$num = 0;

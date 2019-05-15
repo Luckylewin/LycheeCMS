@@ -133,8 +133,10 @@ class IndexController extends Admin
 				}
             }
             $content .= PHP_EOL . ");";
+
             file_put_contents(CONFIG_DIR . 'config.ini.php', $content);
-            $this->adminMsg(lang('success'), purl('index/config', array('type' => $this->get('type'))), 3, 1, 1);
+
+            $this->adminMsg(lang('success'), true, purl('index/config', array('type' => $this->get('type'))));
         }
 
         return $this->render(array(
@@ -282,7 +284,7 @@ return array(
 );";
             $data = $post;
             file_put_contents($file, $version);
-            $this->adminMsg(lang('success'), url('admin/index/bq'), 3, 1, 1);
+            $this->adminMsg(lang('success'),true, url('admin/index/bq'));
         }
 
         return $this->render(['data' => $data]);
@@ -356,7 +358,7 @@ return array(
 				}
 			}
 		}
-	    $this->adminMsg(lang('a-ind-32') . '(#' . $count . ')', purl('index/log'), 3, 1, 1);
+	    $this->adminMsg(lang('a-ind-32') . '(#' . $count . ')', true, purl('index/log'));
 	}
 	
 	/**
@@ -379,7 +381,8 @@ return array(
 				}
 			}
 		}
-	    $this->adminMsg(lang('a-ind-32') . '(#' . $count . ')', purl('index/attack'), 3, 1, 1);
+
+	    $this->adminMsg(lang('a-ind-32') . '(#' . $count . ')',true, purl('index/attack'));
 	}
 	
 	/**
@@ -420,7 +423,8 @@ return array(
 		@fclose($fp);
 		if (file_exists(APP_ROOT . 'finecms_test.txt')) unlink(APP_ROOT . 'finecms_test.txt');
 	    $count = sitemap_xml();
-	    $this->adminMsg(lang('a-ind-39') . '(#' . $count . ')', '', 3, 1, 1);
+
+	    $this->adminMsg(lang('a-ind-39') . '(#' . $count . ')', true);
 	}
 	
 	/**

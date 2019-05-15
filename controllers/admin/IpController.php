@@ -17,7 +17,7 @@ class IpController extends Admin {
 	                $this->delAction($id, 1);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('ip') . lang('success'), url('admin/ip/'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('ip') . lang('success'), true, url('admin/ip/'));
 	    }
 		$ip       = $this->post('kw') ? $this->post('kw') : $this->get('ip');
 	    $page     = (int)$this->get('page');
@@ -44,7 +44,7 @@ class IpController extends Admin {
 			if ($this->ip->getOne('ip=?', $data['ip'])) $this->adminMsg(lang('a-aip-8'));
 			$data['addtime'] = time();
             $this->ip->insert($data);
-            $this->adminMsg($this->getCacheCode('ip') . lang('success'), url('admin/ip'), 3, 1, 1);
+            $this->adminMsg($this->getCacheCode('ip') . lang('success'), true, url('admin/ip'));
         }
 		App::auto_load('fields');
         $this->view->display('admin/ip_add');
@@ -60,29 +60,35 @@ class IpController extends Admin {
             if (empty($data['ip'])) $this->adminMsg(lang('a-aip-0'));
 			if ($this->ip->getOne('id<>' . $id . ' AND ip=?', $data['ip'])) $this->adminMsg(lang('a-aip-8'));
             $this->ip->update($data, 'id=' . $id);
-            $this->adminMsg($this->getCacheCode('ip') . lang('success'), url('admin/ip'), 3, 1, 1);
+            $this->adminMsg($this->getCacheCode('ip') . lang('success'),true, url('admin/ip'));
         }
 		App::auto_load('fields');
         $this->view->assign('data', $data);
         $this->view->display('admin/ip_add');
     }
     
-    public function delAction($id=0, $all=0) {
+    public function delAction($id=0, $all=0)
+    {
         if (!auth::check($this->roleid, 'ip-del', 'admin')) $this->adminMsg(lang('a-com-0', array('1'=>'ip', '2'=>'del')));
 	    $id  = $id  ? $id  : $this->get('id');
 	    $all = $all ? $all : $this->get('all');
 	    $this->ip->delete('id=' . $id);
-	    $all or $this->adminMsg($this->getCacheCode('ip') . lang('success'), url('admin/ip/index'), 3, 1, 1);
+	    $all or $this->adminMsg($this->getCacheCode('ip') . lang('success'), true, url('admin/ip/index'));
 	}
     
-    public function cacheAction($show=0) {
+    public function cacheAction($show=0)
+    {
 	    $list = $this->ip->findAll();
+
 	    $data = array();
+
 	    foreach ($list as $t) {
 	        if (empty($t['endtime']) || ($t['endtime'] - $t['addtime']) >= 0) $data[$t['ip']] = $t;
 	    }
+
 	    $this->cache->set('ip', $data);
-	    $show or $this->adminMsg(lang('a-update'), '', 3, 1, 1);
+
+	    $show or $this->adminMsg(lang('a-update'), true);
 	}
 	
 }

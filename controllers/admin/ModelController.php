@@ -91,9 +91,9 @@ class ModelController extends Admin {
 						}
 					}
 				}
-			    $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/index/', array('typeid' => $this->typeid)), 3, 1, 1);
+			    $this->adminMsg($this->getCacheCode('model') . lang('success'),true,  url('admin/model/index/', array('typeid' => $this->typeid)));
 			} else {
-			    $this->adminMsg(lang('failure'));
+			    $this->adminMsg(lang('failure'),false);
 			}
 	    }
 		$fdata = $this->get_model('form');	//表单模型数据缓存
@@ -144,8 +144,10 @@ class ModelController extends Admin {
 					}
 				}
 			}
-	        $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/index/', array('typeid' => $this->typeid)), 3, 1, 1);
+
+	        $this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/index/', array('typeid' => $this->typeid)));
 	    }
+
 	    $modelid = (int)$this->get('modelid');
 		$fdata = $this->get_model('form');	//表单模型数据缓存
 		$jdata = $join = array();
@@ -178,8 +180,10 @@ class ModelController extends Admin {
 		$name = $this->typeid == 2 ? 'model_member' : 'model_' . $this->modeltype[$this->typeid] . '_' . $this->siteid;
 		$data = $this->cache->get($name);
 		unset($data[$mid]);
+
 		$this->cache->set($name, $data);
-	    $all or $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/index/', array('typeid' => $this->typeid)), 3, 1, 1);
+
+	    $all or $this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/index/', array('typeid' => $this->typeid)));
 	}
 	
 	/**
@@ -198,7 +202,7 @@ class ModelController extends Admin {
 	                $field->update(array('listorder' => $value), 'fieldid=' . $id);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/fields/', array('modelid' => $modelid, 'typeid' => $this->typeid)), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('model') . lang('success'), true,url('admin/model/fields/', array('modelid' => $modelid, 'typeid' => $this->typeid)));
 	    }
 		$setting = string2array($data['setting']);
 	    $this->view->assign(array(
@@ -212,7 +216,8 @@ class ModelController extends Admin {
 	/**
 	 * 添加字段
 	 */
-	public function addfieldAction() {
+	public function addfieldAction()
+    {
 	    $field      = $this->model('model_field');
 	    $modelid    = (int)$this->get('modelid');
 	    $model_data = $this->_model->find($modelid);
@@ -249,6 +254,7 @@ class ModelController extends Admin {
 	        if (empty($name))  $this->adminMsg(lang('a-mod-7'));
 	        if (empty($ftype)) $this->adminMsg(lang('a-mod-8'));
 	        if (!in_array($ftype, array('editor', 'checkbox', 'files', 'merge', 'date', 'fields')) && empty($type)) $this->adminMsg(lang('a-mod-9'));
+
 	        $data  = array(
 	            'name'      => $name,
 	            'tips'      => $this->post('tips'),
@@ -266,29 +272,35 @@ class ModelController extends Admin {
 	            'errortips' => $this->post('errortips'),
 				'errortips' => $this->post('errortips')
 	        );
+
 	        //添加字段入库
 	        if ($field->set(0, $data)) {
-	            $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/fields/', array('modelid' => $modelid, 'typeid' => $this->typeid)), 3, 1, 1);
+	            $this->adminMsg($this->getCacheCode('model') . lang('success'),true, url('admin/model/fields/', array('modelid' => $modelid, 'typeid' => $this->typeid)));
 	        } else {
 	            $this->adminMsg(lang('failure'));
 	        }
 	    }
+
 	    //加载字段配置文件
 	    App::auto_load('fields');
+
 	    $formtype = formtype();
+
 	    $this->view->assign(array(
 			'merge'      => $field->where('modelid=' . $modelid)->where('formtype=?', 'fields')->select(),
 	        'modelid'    => $modelid,
 	        'formtype'   => $formtype,
 	        'model_data' => $model_data
 	    ));
+
 	    $this->view->display('admin/model_addfield');
 	}
 	
 	/**
 	 * 修改字段
 	 */
-	public function editfieldAction() {
+	public function editfieldAction()
+    {
 	    $field   = $this->model('model_field');
 	    $fieldid = (int)$this->get('fieldid');
 	    $data    = $field->getOne('fieldid=' . $fieldid);
@@ -314,9 +326,9 @@ class ModelController extends Admin {
 	        );
 	        //字段入库
 	        if ($field->set($fieldid, $data)) {
-	            $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $modelid)), 3, 1, 1);
+	            $this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $modelid)));
 	        } else {
-	            $this->adminMsg(lang('failure'));
+	            $this->adminMsg(lang('failure'),false);
 	        }
 	    }
 	    //加载字段配置文件
@@ -345,13 +357,15 @@ class ModelController extends Admin {
 	    if ($this->post('submit')) {
 			$setting['default'][$name] = $this->post('data');
 			$this->_model->update(array('setting' => array2string($setting)), 'modelid=' . $modelid);
-			$this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $modelid)), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $modelid)));
 	    }
+
 	    $this->view->assign(array(
 	        'data'    => $field,
 			'name'    => $data['modelname'],
 	        'modelid' => $modelid
 	    ));
+
 	    $this->view->display('admin/model_ajaxedit');
 	}
 	
@@ -372,49 +386,60 @@ class ModelController extends Admin {
 	/**
 	 * 禁用/启用字段
 	 */
-	public function disableAction() {
+	public function disableAction()
+    {
 	    $fieldid = (int)$this->get('fieldid');
 	    $field   = $this->model('model_field');
 	    $data    = $field->getOne('fieldid=' . $fieldid);
 	    if (empty($data)) $this->adminMsg(lang('a-mod-10'));
 	    $disable = $data['disabled'] == 1 ? 0 : 1;
 	    $field->update(array('disabled' => $disable), 'fieldid=' . $fieldid);
-	    $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $data['modelid'])), 3, 1, 1);
+
+	    return $this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $data['modelid'])));
 	}
 	
 	/**
 	 * 删除字段
 	 */
-	public function delfieldAction() {
+	public function delfieldAction()
+    {
 	    $fieldid = (int)$this->get('fieldid');
 	    $field   = $this->model('model_field');
 	    $data    = $field->getOne('fieldid=' . $fieldid);
 	    if (empty($data)) $this->adminMsg(lang('a-mod-10'));
 		if ($data['field'] == 'content') $this->adminMsg(lang('a-mod-11'));
 	    if ($field->del($data)) {
-	        $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $data['modelid'])), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/fields/', array('typeid' => $this->typeid, 'modelid' => $data['modelid'])));
 	    } else {
-	        $this->adminMsg(lang('failure'));
+	        $this->adminMsg(lang('failure'),false);
 	    }
 	}
 	
 	/*
 	 * 禁用/启用模型
 	 */
-	public function cdisabledAction() {
+	public function cdisabledAction()
+    {
 	    $modelid = (int)$this->get('modelid');
+
 	    $data    = $this->_model->find($modelid);
+
 	    if (!$data) $this->adminMsg(lang('a-mod-4'));
-		$setting = string2array($data['setting']);
-	    $setting['disable'] = $setting['disable'] == 1 ? 0 : 1;
+
+	    $setting = string2array($data['setting']);
+
+		$setting['disable'] = $setting['disable'] == 1 ? 0 : 1;
+
 	    $this->_model->update(array('setting' => array2string($setting)), 'modelid=' . $modelid);
-	    $this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/index/', array('typeid' => $this->typeid)), 3, 1, 1);
+
+	    $this->adminMsg($this->getCacheCode('model') . lang('success'),true, url('admin/model/index/', array('typeid' => $this->typeid)));
 	}
 	
 	/*
 	 * 导出模型
 	 */
-	public function exportAction() {
+	public function exportAction()
+    {
 		$model   = $this->typeid != 2 ? $this->get_model($this->modeltype[$this->typeid]) : $this->cache->get('model_member');
 		$modelid = (int)$this->get('modelid');
 	    if (!$model) $this->adminMsg(lang('a-mod-4'));
@@ -479,8 +504,9 @@ class ModelController extends Admin {
 			if (substr($content['setting'], 0, 1) == "'") $content['setting'] = substr($content['setting'], 1);
 			if (substr($content['setting'], -1) == "'")   $content['setting'] = substr($content['setting'], 0, -1);
 			$field->update($content, 'modelid=' . $modelid . ' and field="content"');
-			$this->adminMsg($this->getCacheCode('model') . lang('success'), url('admin/model/index/', array('typeid' => $this->typeid)), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('model') . lang('success'), true, url('admin/model/index/', array('typeid' => $this->typeid)));
 	    }
+
 	    $this->view->display('admin/model_import');
 	}
 	
@@ -577,7 +603,9 @@ class ModelController extends Admin {
 				}
 			}
 		}
+
 		$this->cache->set('model_join_' . $site_id, $join);
-	    $show or $this->adminMsg(lang('a-update'), '', 3, 1, 1);
+
+	    $show or $this->adminMsg(lang('a-update'), true);
 	}
 }

@@ -175,8 +175,11 @@ function get_form_status($status) {
 
 /**
  * 读取栏目缓存数据
+ * @param int $site
+ * @return string
  */
-function get_category_data($site = 0) {
+function get_category_data($site = 0)
+{
 	$cfg  	= App::get_config();
 	$cache 	= new cache_file();
 	$site	= empty($site) ? App::get_site_id() : $site;
@@ -1648,29 +1651,6 @@ function dr_string2array($data) {
  */
 function dr_array2string($data) {
     return $data ? addslashes(serialize($data)) : '';
-}
-
-
-// 发送短信
-function fn_sendsms($mobile, $content) {
-
-    if (!$mobile || !$content) {
-        return FALSE;
-    }
-
-    $file = FCPATH.'config/sms.php';
-    $config = @is_file($file) ? string2array(file_get_contents($file)) : array();
-
-    $result = dr_catcher_data('http://sms.dayrui.com/index.php?uid='.$config['uid'].'&key='.$config['key'].'&mobile='.$mobile.'&content='.$content.'【'.$config['note'].'】&domain='.trim(str_replace('http://', '', SITE_URL), '/').'&sitename='.CMS_NAME);
-    if (!$result) {
-        return FALSE;
-    }
-
-    $result = dr_object2array(json_decode($result));
-
-    @file_put_contents(FCPATH.'cache/sms.log', date('Y-m-d H:i:s').' ['.$mobile.'] ['.$result['msg'].'] （'.str_replace(array(chr(13), chr(10)), '', $content).'）'.PHP_EOL, FILE_APPEND);
-
-    return $result;
 }
 
 

@@ -39,7 +39,8 @@ class PluginController extends Admin {
 	/**
 	 * 插件配置
 	 */
-	public function setAction() {
+	public function setAction()
+    {
 	    $pluginid = $this->get('pluginid');
 	    $data     = $this->plugin->find($pluginid);
 	    if (empty($data)) $this->adminMsg(lang('a-plu-3'));
@@ -47,18 +48,21 @@ class PluginController extends Admin {
 	        $setting = $this->post('data');
 	        $setting = array2string($setting);
 	        $this->plugin->update(array('setting' => $setting), 'pluginid=' . $pluginid);
-	        $this->adminMsg(lang('success'), url('admin/plugin/set/', array('pluginid' => $pluginid)), 3, 1, 1);
+	        $this->adminMsg(lang('success'), true, url('admin/plugin/set/', array('pluginid' => $pluginid)));
 	    }
+
 	    $setting = string2array($data['setting']);
 	    $set     = $this->load_plugin_setting($data['dir']);
 		$field   = array('data' => $set['fields']);
 	    $fields  = $this->getFields($field, $setting);
 	    $show    = empty($set['fields']) ? 1 : 0;
+
 	    $this->view->assign(array(
 	        'data'   => $data,
 	        'show'   => $show,
 	        'fields' => $fields
 	    ));
+
 	    $this->view->display('admin/plugin_set');
 	}
 	
@@ -91,7 +95,7 @@ class PluginController extends Admin {
 	    $config['setting'] = array2string($config['fields']);
         $config['markid'] = (int)$config['key'];
 	    $this->plugin->insert($config);
-	    $this->adminMsg($this->getCacheCode('plugin') . lang('a-plu-6'), url('admin/plugin/index'), 3, 0, 1);
+	    $this->adminMsg($this->getCacheCode('plugin') . lang('a-plu-6'), true , url('admin/plugin/index'));
 	}
 	
 	/**
@@ -107,13 +111,14 @@ class PluginController extends Admin {
 			<a href="' . url('admin/plugin/del', array('pluginid' => $pluginid, 'result' => 1)) . '" style="font-size:14px;">' . lang('a-plu-8') . '</a>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<a href="' . url('admin/plugin/index') . '" style="font-size:14px;">' . lang('a-plu-9') . '</a></div>';
-			$this->adminMsg($html, '', 3, 1, 2);
+			$this->htmlMsg($html, '', 3, 1, 2);
 		}
 	    if ($data['typeid'] == 1) {
 	        //包含控制器的插件
 	        $uninstall = $this->dir . $data['dir'] . DIRECTORY_SEPARATOR . 'uninstall.php';
 	        if (!file_exists($uninstall)) $this->adminMsg(lang('a-plu-10'));
-	        $data = require $uninstall;
+	        $data = require_once $uninstall;
+
 	        if ($data) {
 	            //数据表
 	            if (is_array($data)) {
@@ -127,13 +132,14 @@ class PluginController extends Admin {
 	    }
 	    //代码调用插件，直接删除表中记录
 	    $this->plugin->delete('pluginid=' . $pluginid);
-	    $this->adminMsg($this->getCacheCode('plugin') . lang('a-plu-11'), url('admin/plugin/index'), 1, 0, 1);
+	    $this->adminMsg($this->getCacheCode('plugin') . lang('a-plu-11'), true, url('admin/plugin/index'));
 	}
 	
 	/**
 	 * 硬盘删除插件
 	 */
-	public function unlinkAction() {
+	public function unlinkAction()
+    {
 	    $dir      = $this->get('dir');
 	    $result   = $this->get('result');
 		if (empty($result)) {
@@ -141,9 +147,11 @@ class PluginController extends Admin {
 			<a href="' . url('admin/plugin/unlink', array('dir' => $dir, 'result' => 1)) . '" style="font-size:14px;">' . lang('a-plu-12') . '</a>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<a href="' . url('admin/plugin/index') . '" style="font-size:14px;">' . lang('a-plu-9') . '</a></div>';
-			$this->adminMsg($html, '', 3, 1, 2);
+			$this->htmlMsg($html, '', 3, 1, 2);
 		}
+
 	    $data    = $this->plugin->getOne('dir=?', $dir);
+
 		if ($data) {
 			if ($data['typeid'] == 1) {
 				//包含控制器的插件
@@ -167,22 +175,28 @@ class PluginController extends Admin {
 		//删除硬盘数据
 		if (is_dir($this->dir . $dir)) {
 		    $this->delDir($this->dir . $dir);
-			$this->adminMsg($this->getCacheCode('plugin') . lang('a-plu-14'), url('admin/plugin/index'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('plugin') . lang('a-plu-14'), true, url('admin/plugin/index'));
 		} else {
-		    $this->adminMsg(lang('a-plu-15'), url('admin/plugin/index'));
+		    $this->adminMsg(lang('a-plu-15'),false, url('admin/plugin/index'));
 		}
 	}
 	
     /**
 	 * 禁用/启用
 	 */
-	public function disableAction() {
+	public function disableAction()
+    {
 	    $pluginid = $this->get('pluginid');
+
 	    $data     = $this->plugin->find($pluginid);
+
 	    if (empty($data)) $this->adminMsg(lang('a-plu-3'));
+
 	    $disable  = $data['disable'] == 1 ? 0 : 1;
+
 	    $this->plugin->update(array('disable' => $disable), 'pluginid=' . $pluginid);
-	    $this->adminMsg($this->getCacheCode('plugin') . lang('success'), url('admin/plugin/index/'), 3, 1, 1);
+
+	    $this->adminMsg($this->getCacheCode('plugin') . lang('success'), true, url('admin/plugin/index/'));
 	}
 	
 	/**
@@ -196,7 +210,8 @@ class PluginController extends Admin {
 	        $row[$t['dir']]['setting'] = string2array($t['setting']);
 	    }
 	    $this->cache->set('plugin', $row);
-	    $show or $this->adminMsg(lang('a-update'), '', 3, 1, 1);
+
+	    $show or $this->adminMsg(lang('a-update'), true);
 	}
 	
     /**

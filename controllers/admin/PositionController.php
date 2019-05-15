@@ -19,28 +19,31 @@ class PositionController extends Admin {
 	                $this->position->del($id);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/index'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('position') . lang('success'),true , url('admin/position/index'));
 	    }
 	    $data = $this->position->where('site=' . $this->siteid)->select();
 	    $this->view->assign('list', $data);
 	    $this->view->display('admin/position_list');
 	}
 	
-	public function addAction() {
+	public function addAction()
+    {
 	    if ($this->post('submit')) {
 	        $data = $this->post('data');
 	        if (empty($data['name'])) $this->adminMsg(lang('a-pos-10'));
 	        $data['maxnum'] = $data['maxnum'] ? $data['maxnum'] : 10;
 	        if ($this->position->set(0, $data)) {
-	            $this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/index'), 3, 1, 1);
+	            $this->adminMsg($this->getCacheCode('position') . lang('success'),true , url('admin/position/index'));
 	        } else {
 	            $this->adminMsg(lang('failure'));
 	        }
 	    }
+
 	    $this->view->display('admin/position_add');
 	}
 	
-    public function editAction() {
+    public function editAction()
+    {
         $posid = (int)$this->get('posid');
         if (empty($posid)) $this->adminMsg(lang('a-pos-11'));
 	    if ($this->post('submit')) {
@@ -48,7 +51,7 @@ class PositionController extends Admin {
 	        if (empty($data['name'])) $this->adminMsg(lang('a-pos-10'));
 	        $data['maxnum'] = $data['maxnum'] ? $data['maxnum'] : 10;
 	        $this->position->set($posid, $data);
-	        $this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/index'), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('position') . lang('success'), true, url('admin/position/index'));
 	    }
 	    $data = $this->position->find($posid);
 	    if (empty($data)) $this->adminMsg(lang('a-pos-11'));
@@ -60,7 +63,7 @@ class PositionController extends Admin {
 	    $posid = (int)$this->get('posid');
 	    if (empty($posid)) $this->adminMsg(lang('a-pos-11'));
 	    $this->position->del($posid);
-	    $this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/index'), 3, 1, 1);
+	    $this->adminMsg($this->getCacheCode('position') . lang('success'), true, url('admin/position/index'));
 	}
 	
 	public function listAction() {
@@ -73,7 +76,7 @@ class PositionController extends Admin {
 	                $this->position_data->update(array('listorder' => $value), 'id=' . $id);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/list/', array('posid' => $posid)), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('position') . lang('success'), true, url('admin/position/list/', array('posid' => $posid)));
 	    }
 	    if ($this->post('submit_del') && $this->post('form') == 'del') {
 	        foreach ($_POST as $var=>$value) {
@@ -96,7 +99,9 @@ class PositionController extends Admin {
 	                $this->position_data->delete('id=' . (int)$id);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/list/', array('posid' => $posid)), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('position') . lang('success'),true, url('admin/position/list/', array('posid' => $posid)));
+
 	    }
 	    $this->view->assign(array(
 	        'posid' => $posid,
@@ -113,7 +118,7 @@ class PositionController extends Admin {
 	        if (empty($data['title']) || empty($data['url'])) $this->adminMsg(lang('a-pos-12'));
 	        $data['posid'] = $posid;
 	        if ($this->position_data->set(0, $data)) {
-	            $this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/list/', array('posid' => $posid)), 3, 1, 1);
+	            $this->adminMsg($this->getCacheCode('position') . lang('success'),true, url('admin/position/list/', array('posid' => $posid)));
 	        } else {
 	            $this->adminMsg(lang('a-pos-13'));
 	        }
@@ -137,7 +142,7 @@ class PositionController extends Admin {
 	        if (empty($data['title']) || empty($data['url'])) $this->adminMsg(lang('a-pos-12'));
 	        $data['posid'] = $posid;
 	        if ($this->position_data->set($id, $data)) {
-	            $this->adminMsg($this->getCacheCode('position') . lang('success'), url('admin/position/list/', array('posid' => $posid)), 3, 1, 1);
+	            $this->adminMsg($this->getCacheCode('position') . lang('success'),true, url('admin/position/list/', array('posid' => $posid)));
 	        } else {
 	            $this->adminMsg(lang('a-pos-13'));
 	        }
@@ -185,7 +190,7 @@ class PositionController extends Admin {
 	    }
 	    //写入缓存文件中
 	    $this->cache->set('position_' . $site_id, $data);
-	    $show or $this->adminMsg(lang('a-update'), '', 3, 1, 1);
+	    $show or $this->adminMsg(lang('a-update'), true);
 	}
 	
 	

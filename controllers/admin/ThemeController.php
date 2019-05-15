@@ -1,6 +1,7 @@
 <?php
 
-class ThemeController extends Admin {
+class ThemeController extends Admin
+{
     
     public function __construct() {
 		parent::__construct();
@@ -48,7 +49,8 @@ class ThemeController extends Admin {
         $this->view->display('admin/theme_list');
     }
     
-    public function editAction() {
+    public function editAction()
+    {
         $dir = base64_decode($this->get('dir'));
 		$dir = substr($dir, -1) == DIRECTORY_SEPARATOR ? substr($dir, 0, -1) : $dir;
 		if ($this->checkFileName($dir)) {
@@ -64,7 +66,9 @@ class ThemeController extends Admin {
 		} else {
 			$is_post = 0;
 		}
+
         $file = file_get_contents($name);
+
 		$this->view->assign(array(
 			'file' => $file,
 		    'name' => str_replace(VIEW_DIR, '', $name),
@@ -73,10 +77,12 @@ class ThemeController extends Admin {
 			'is_post' => $is_post,
 			'iswrite' => is_writable(VIEW_DIR),
 		));
+
 		$this->view->display('admin/theme_add');
     }
 	
-	public function addAction() {
+	public function addAction()
+    {
         $dir  = base64_decode($this->get('cpath'));
 		if ($this->checkFileName($dir)) $this->adminMsg(lang('m-con-20'));
         $name = VIEW_DIR . $dir;
@@ -92,22 +98,26 @@ class ThemeController extends Admin {
 			} else {
 				$this->adminMsg(lang('a-con-124'));
 			}
-			$this->adminMsg(lang('success'),url('admin/theme/index', array('dir'=>base64_encode($path))), 3, 1, 1);
+
+			$this->adminMsg(lang('success'),true,url('admin/theme/index', array('dir'=>base64_encode($path))));
 		}
+
 		$this->view->assign(array(
 		    'path'		=> $path,
 			'syntax'	=> 'html',
 			'action'	=> 'add',
 			'iswrite'	=> is_writable(VIEW_DIR)
 		));
+
 		$this->view->display('admin/theme_add');
     }
 
-	public function installAction() {
+	public function installAction()
+    {
 
 		$dir = $this->input->get('name');
 		if (!$this->input->get('todo')) {
-			$this->adminMsg('正在安装模板,请稍后....', url('admin/theme/install', array('todo'=>1, 'name'=>$dir)), 1, 1, 1);
+			$this->adminMsg('正在安装模板,请稍后....', true, url('admin/theme/install', array('todo'=>1, 'name'=>$dir)));
 		}
 
 		$file = FCPATH.'views/'.$dir.'/install.sql';
@@ -142,7 +152,7 @@ class ThemeController extends Admin {
 		$body .= PHP_EOL . ");";
 
 		file_put_contents(CONFIG_DIR . 'site' . DIRECTORY_SEPARATOR . $this->siteid . '.ini.php', $body);
-		$this->adminMsg('安装成功', url('admin/theme/index', array('todo'=>1, 'name'=>$dir)), 1, 1, 1);
+		$this->adminMsg('安装成功',true, url('admin/theme/index', array('todo'=>1, 'name'=>$dir)));
 
 	}
 
@@ -183,14 +193,15 @@ class ThemeController extends Admin {
 		}
 	}
 	
-	public function delAction() {
+	public function delAction()
+    {
 	    $dir  = base64_decode($this->get('name'));
 		if ($this->checkFileName($dir)) $this->adminMsg(lang('m-con-20'));
 		$dir  = substr($dir, -1) == DIRECTORY_SEPARATOR ? substr($dir, 0, -1) : $dir;
 		$name = VIEW_DIR . $dir;
 		$this->delDir($name);
 		$Pdir = VIEW_DIR == dirname($name) . DIRECTORY_SEPARATOR ? '' : str_replace(VIEW_DIR, '', dirname($name));
-		$this->adminMsg(lang('success'),url('admin/theme/index', array('dir'=>base64_encode($Pdir . DIRECTORY_SEPARATOR))), 3, 1, 1);
+		$this->adminMsg(lang('success'), true, url('admin/theme/index', array('dir'=>base64_encode($Pdir . DIRECTORY_SEPARATOR))));
 	}
 	
 	public function demoAction() {
@@ -304,6 +315,6 @@ class ThemeController extends Admin {
 	public function cacheAction($show=0) {
 		$dir = APP_ROOT . 'cache/views/';
 		if (!file_exists($dir)) mkdir($dir);
-	    $show or $this->adminMsg(lang('a-update'), url('admin/theme/index'), 3, 1, 1);
+	    $show or $this->adminMsg(lang('a-update'), true,url('admin/theme/index'));
 	}
 }

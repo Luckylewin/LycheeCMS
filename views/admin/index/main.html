@@ -30,7 +30,7 @@ $(function(){
 <div class="col-2 lf mr10" style="width:48%">
 	<h6>{lang('a-ind-0')}</h6>
 	<div class="content" style="height:170px;">
-	{lang('a-com-15')}，{$userinfo['username']}&nbsp;{if $userinfo['realname']}({$userinfo['realname']}){/if} ，{lang('a-ind-1')}：{$userinfo['rolename']} <br />
+	{lang('a-com-15')}，{$userinfo['username']}&nbsp;{if $userinfo['realname']}({$userinfo['realname']}){/if}<br />
 	{lang('a-ind-2')}：{date(TIME_FORMAT, $userinfo['lastlogintime'])} ，{lang('a-ind-3')}：<a href="http://www.baidu.com/baidu?wd={$userinfo['lastloginip']}" target=_blank>{$userinfo['lastloginip']}</a><br />
     {lang('a-ind-4')}：{date(TIME_FORMAT, $userinfo['logintime'])} ，{lang('a-ind-5')}：<a href="http://www.baidu.com/baidu?wd={$userinfo['loginip']}" target=_blank>{$userinfo['loginip']}</a>
 	<div class="bk20 hr"><hr></div>
@@ -116,7 +116,7 @@ $(function(){
 		</table>
 	</div>
 </div>
-<div class="col-2 col-auto">
+<div class="col-2 col-auto" style="display: none">
 		<h6>{lang('a-ind-110')}</h6>
 		<div class="content" style="height:144px;">
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">

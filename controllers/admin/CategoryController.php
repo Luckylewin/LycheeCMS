@@ -21,7 +21,7 @@ class CategoryController extends Admin {
 	                $this->category->update(array('listorder'=>$value), 'catid=' . (int)str_replace('order_', '', $var));
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('category') . lang('success'), url('admin/category/index'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('category') . lang('success'),true, url('admin/category/index'));
 	    }
 		if ($this->post('delete')) {
 			$ids = $this->post('ids');
@@ -30,7 +30,7 @@ class CategoryController extends Admin {
 				    $this->delAction($catid, 1);
 				}
 			}
-			$this->adminMsg($this->getCacheCode('category') . lang('success'), url('admin/category/index'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('category') . lang('success'),true, url('admin/category/index'));
 	    }
 		$data = $this->category->getData();
         $form = $this->get_model('form');
@@ -102,7 +102,9 @@ class CategoryController extends Admin {
 						$y++;
 					}
 				}
-				$this->adminMsg($this->getCacheCode('category') . lang('a-cat-5', array('1' => $y, '2' => $n)), url('admin/category/index'), 3, 1, 1);
+
+				$this->adminMsg($this->getCacheCode('category') . lang('a-cat-5', array('1' => $y, '2' => $n)), true, url('admin/category/index'));
+
 			} else {
 				if (empty($data['catname'])) {
                     $this->adminMsg(lang('a-cat-4'));
@@ -119,7 +121,7 @@ class CategoryController extends Admin {
                 }
 				$data['catid'] = $result;
 				$this->category->url($result, $this->getCaturl($data));
-				$this->adminMsg($this->getCacheCode('category') . lang('success'), url('admin/category/index'), 3, 1, 1);
+				$this->adminMsg($this->getCacheCode('category') . lang('success'), true,url('admin/category/index'));
 			}
 	    }
         $form = $this->get_model('form');
@@ -168,11 +170,12 @@ class CategoryController extends Admin {
 	        if (is_numeric($result)) {
 				$data['catid'] = $result;
 				$this->category->url($result, $this->getCaturl($data));
-	            $this->adminMsg($this->getCacheCode('category') . lang('success'), url('admin/category/index'), 3, 1, 1);
+	            $this->adminMsg($this->getCacheCode('category') . lang('success'),true, url('admin/category/index'));
 	        } else {
 	            $this->adminMsg(lang('a-cat-8'));
 	        }
 	    }
+
         $catid = (int)$this->get('catid');
         if (empty($catid)) {
             $this->adminMsg(lang('a-cat-7'));
@@ -225,7 +228,7 @@ class CategoryController extends Admin {
         }
         $result= $this->category->del($catid);
 	    if ($result) {
-	        $all or $this->adminMsg($this->getCacheCode('category') . lang('success'), url('admin/category/index'), 3, 1, 1);
+	        $all or $this->adminMsg($this->getCacheCode('category') . lang('success'), true,url('admin/category/index'));
 	    } else {
 	        $all or $this->adminMsg(lang('a-cat-8'));
 	    }
@@ -250,8 +253,9 @@ class CategoryController extends Admin {
 					$count ++;
 				}
 			}
-			$this->adminMsg($this->getCacheCode('category') . lang('a-cat-10', array('1' => $count)), url('admin/category'), 3, 1, 1);
+			$this->adminMsg($this->getCacheCode('category') . lang('a-cat-10', array('1' => $count)),true, url('admin/category'));
 	    }
+
 	    $this->view->assign('category', $this->tree->get_tree($this->cats));
 	    $this->view->display('admin/category_url');
 	}
@@ -352,6 +356,7 @@ class CategoryController extends Admin {
 			$this->cache->set('category_' . $site_id, $count);
 		}
 	    $this->cache->set('category_dir_' . $site_id, $category_dir);
-	    $show or $this->adminMsg(lang('a-update'), url('admin/category/index'), 3, 1, 1);
+
+	    $show or $this->adminMsg(lang('a-update'),true, url('admin/category/index'));
 	}
 }

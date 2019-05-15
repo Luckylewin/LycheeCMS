@@ -2,6 +2,8 @@
 
 class ApiController extends Common {
 
+    public $commonHtml = false;
+
     public function __construct() {
         parent::__construct();
     }

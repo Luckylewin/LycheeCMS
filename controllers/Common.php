@@ -15,6 +15,9 @@ class Common extends CI_Controller
     public $input;
     public $siteid;
     public $action;
+    /**
+     * @var CI_Session
+     */
 	public $session;
     public $namespace;
     public $controller;
@@ -26,6 +29,9 @@ class Common extends CI_Controller
     public $membergroup;
     public $memberconfig;
 
+    /**
+     * @var CI_DB_driver
+     */
     public $db;
     public $cats;
     public $site;
@@ -35,6 +41,8 @@ class Common extends CI_Controller
 
     public $_options;
     public $template;
+
+    public $commonHtml = true;
 
     public function __construct()
     {
@@ -98,21 +106,13 @@ class Common extends CI_Controller
 		}
 
 
-
 		//载入会员系统缓存
 		if (!$this->site['SYS_MEMBER'] && is_dir(CONTROLLER_DIR . 'member')) {
 			$this->member = Controller::model('member');
 			$this->membergroup  = $this->cache->get('membergroup');
 			$this->membermodel  = $this->cache->get('model_member');
 			$this->memberconfig	= $this->cache->get('member');
-			if ($this->memberconfig['uc_use'] == 1 && $this->namespace != 'admin') {
-				if (is_file(EXTENSION_DIR . 'ucenter' . DIRECTORY_SEPARATOR . 'config.inc.php')){
-					include EXTENSION_DIR . 'ucenter' . DIRECTORY_SEPARATOR . 'config.inc.php';
-				} 
-				if (is_file(EXTENSION_DIR . 'ucenter' . DIRECTORY_SEPARATOR . 'uc_client' . DIRECTORY_SEPARATOR . 'client.php')) {
-					include EXTENSION_DIR . 'ucenter' . DIRECTORY_SEPARATOR . 'uc_client' . DIRECTORY_SEPARATOR . 'client.php';
-				}
-			}
+
 			$this->memberinfo = $this->getMember();
 			$this->view->assign(array(
 				'memberinfo' => $this->memberinfo,
@@ -138,68 +138,23 @@ class Common extends CI_Controller
 
 		date_default_timezone_set(SYS_TIME_ZONE);
         $this->load->library('user_agent');
-        //
-        /*
-        if (defined('SITE_BDPING') && SITE_BDPING &&
-            date('G') < 6 && $this->agent->is_robot()
-            && !get_cookie('sb') && $this->db->query("SHOW TABLES LIKE '".$this->db->dbprefix."sb'")->row_array()) {
-            $data = $this->db->limit(5)->order_by('id desc')->get('sb')->result_array();
-            if ($data) {
-                set_cookie('sb', 1, 600);
-                $delete = array();
-                foreach ($data as $t) {
-                    $value = string2array($t['value']);
-                    if ($t['type'] == 'content_add') {
-                        // 文章推送到baidping
-                        if (function_exists('curl_init')) {
-                            $url = 'http://ping.baidu.com/ping/RPC2';
-                            $xml = "
-                            <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                            <methodCall>
-                                <methodName>weblogUpdates.extendedPing</methodName>
-                                <params>
-                                    <param>
-                                        <value><string>".$value['title']."</string></value>
-                                    </param>
-                                    <param>
-                                        <value><string>".SITE_URL."</string></value>
-                                    </param>
-                                    <param>
-                                        <value><string>".$value['url']."</string></value>
-                                    </param>
-                                    <param>
-                                        <value><string></string></value>
-                                    </param>
-                                </params>
-                            </methodCall>";
-                            $ch = curl_init();
-                            $head = array(
-                                "POST ".$url." HTTP/1.0",
-                                "Content-type: text/xml;charset=\"utf-8\"",
-                                "Accept: text/xml",
-                                "Content-length: ".strlen($xml)
-                            );
-                            curl_setopt($ch, CURLOPT_URL, $url);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-                            curl_setopt($ch, CURLOPT_POST, 1);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
-                            curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-                            $res = curl_exec ($ch);
-                            curl_close ($ch);
-                            if (strpos($res, "<int>0</int>")) {
-                                $delete[] = $t['id'];
-                            }
-                        }
-                    }
-                    if ($delete) {
-                        $this->db->where_in('id', $delete)->delete('sb');
-                    }
-                }
+
+        // 公共模版
+        if ($this->commonHtml == true) {
+            $this->view->display('admin/common/main', true);
+
+            if ($this->session->is_set('msg')) {
+
+                $this->view->assign(array(
+                    'toastr_msg' => $this->session->get('msg'),
+                    'toastr_status' => $this->session->get('status')
+                ));
+
+                $this->session->delete('msg');
+                $this->session->delete('status');
             }
         }
-         * */
     }
-
 
     protected function is_ie()
     {
@@ -241,29 +196,47 @@ class Common extends CI_Controller
         }
 		return false;
 	}
-    
+
     /**
-     * 后台提示信息
-	 * msg    消息名称
-	 * url    返回地址
-	 * time   等待时间
-	 * i      是否显示返回文字
-	 * result 返回结果是否成功
+     * @param string $msg  消息
+     * @param string $url  url
+     * @param bool $result 结果
+     * @return bool
      */
-    protected function adminMsg($msg, $url = '', $time = 3, $i = 1, $result = 0) {
-	    $this->view->assign(array(
-			'i'      => $i,
-		    'msg'    => $msg,
-			'url'    => $url,
-			'time'   => $time,
-			'result' => $result
-		));
-		$tpl = 'admin/shared/msg';
+    protected function adminMsg($msg,$result = false,  $url = '')
+    {
+        $msg = preg_replace('/<script[\s\S]*?<\/script>/i', '', $msg);
+
+        if ($result) {
+            $this->session->set('status', 'success');
+        } else {
+            $this->session->set('status', 'warning');
+        }
+
+        $this->session->set('msg', trim($msg));
+
+        if (empty($url)) {
+            $url = $_SERVER['HTTP_REFERER'];
+        }
+
+        return $this->redirect($url);
+    }
+
+    protected function htmlMsg($msg, $url = '', $time = 3, $i = 1, $result = 0)
+    {
+        $this->view->assign(array(
+            'i'      => $i,
+            'msg'    => $msg,
+            'url'    => $url,
+            'time'   => $time,
+            'result' => $result
+        ));
+        $tpl = 'admin/shared/msg';
         $this->namespace != 'admin' && $tpl = '../' . $tpl;
         $this->view->display($tpl);
         exit;
     }
-	
+
 	/**
      * 会员提示信息
 	 * msg    消息名称
@@ -1283,6 +1256,7 @@ class Common extends CI_Controller
         if ($file_name == null) {
             $file_name = App::$namespace . '/'. App::$controller . '/' . App::$action;
         }
+
         $this->view->display($file_name);
     }
 

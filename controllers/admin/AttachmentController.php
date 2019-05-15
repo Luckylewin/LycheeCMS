@@ -79,12 +79,12 @@ class AttachmentController extends Admin {
         if (is_dir($name)) {
             //删除目录
             $this->delDir($name);
-            $this->adminMsg(lang('a-att-2'), url('admin/attachment/index', array('dir'=>base64_encode(str_replace(basename($dir), '', $dir)))), 3, 1, 1);
+            $this->adminMsg(lang('a-att-2'), true, url('admin/attachment/index', array('dir'=>base64_encode(str_replace(basename($dir), '', $dir)))));
         }
         if (is_file($name)) {
             //删除文件
             unlink($name);
-            $this->adminMsg(lang('a-att-3'), url('admin/attachment/index', array('dir'=>base64_encode(str_replace(basename($dir), '', $dir)))), 3, 1, 1);
+            $this->adminMsg(lang('a-att-3'),true, url('admin/attachment/index', array('dir'=>base64_encode(str_replace(basename($dir), '', $dir)))));
         }
     }
 	

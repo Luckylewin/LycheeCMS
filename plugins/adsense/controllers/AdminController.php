@@ -2,11 +2,17 @@
 
 class AdminController extends Plugin {
     
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
+
         //Admin控制器进行登录验证
-        if (!$this->session->is_set('user_id') || !$this->session->get('user_id')) $this->adminMsg('请登录以后再操作', url('admin/login'));
-        App::auto_load('fields'); //加载字段操作函数库
+        if (!$this->session->is_set('user_id') || !$this->session->get('user_id')) {
+            $this->adminMsg('请登录以后再操作',false, url('admin/login'));
+        }
+
+        //加载字段操作函数库
+        App::auto_load('fields');
     }
     
   /**
@@ -47,11 +53,15 @@ class AdminController extends Plugin {
 
         if ($this->isPostForm()) {
             $data = $this->post('data');
-      unset($data['id']);
+            unset($data['id']);
             $data['adname'] or $this->adminMsg('广告位名称不能为空');
-      if (empty($data['width']) || empty($data['height'])) $this->adminMsg('广告位高宽不能为空！');
+
+            if (empty($data['width']) || empty($data['height'])) {
+                $this->adminMsg('广告位高宽不能为空！');
+            }
+
             $this->adsense->insert($data);
-            $this->adminMsg('操作成功', url('adsense/admin'), 3, 1, 1);
+            $this->adminMsg('操作成功',true, url('adsense/admin'));
         }
 
         $this->display('admin_add');
@@ -68,9 +78,12 @@ class AdminController extends Plugin {
             unset($data);
             $data = $this->post('data');
             $data['adname'] or $this->adminMsg('广告位名称不能为空');
-      if (empty($data['width']) || empty($data['height'])) $this->adminMsg('广告位高宽不能为空！');
+            if (empty($data['width']) || empty($data['height'])) {
+                $this->adminMsg('广告位高宽不能为空！');
+            }
+
             $this->adsense->update($data, 'id=' . $id);
-            $this->adminMsg('操作成功', url('adsense/admin'), 3, 1, 1);
+            $this->adminMsg('操作成功', true, url('adsense/admin'));
         }
         $this->assign(array(
             'data'   => $data,
@@ -170,8 +183,9 @@ class AdminController extends Plugin {
             }
             $data['setting']   = array2string($setting);
             $this->adsense_data->insert($data);
-            $this->adminMsg('操作成功', purl('admin/alist', array('aid'=>$aid)), 3, 1, 1);
+            $this->adminMsg('操作成功', true,purl('admin/alist', array('aid'=>$aid)));
         }
+
         //获取栏目
         $cat = getCattree(0,0);
         
@@ -221,7 +235,7 @@ class AdminController extends Plugin {
 
            
             $this->adsense_data->update($data, 'id=' . $id);
-            $this->adminMsg('操作成功', purl('admin/alist', array('aid'=>$aid)), 3, 1, 1);
+            $this->adminMsg('操作成功',true, purl('admin/alist', array('aid'=>$aid)));
         }
         $list    = $this->getType();
         $type    = $list[$data['typeid']]['fields'];
@@ -248,11 +262,12 @@ class AdminController extends Plugin {
   /**
      * 删除广告位
      */
-    public function delAction() {
+    public function delAction()
+    {
         $id = $this->get('id');
         $this->adsense->delete('id=' . $id);
-    $this->adsense_data->delete('aid=' . $id);
-        $this->adminMsg('操作成功', url('adsense/admin'), 3, 1, 1);
+        $this->adsense_data->delete('aid=' . $id);
+        $this->adminMsg('操作成功',true, url('adsense/admin'));
     }
     
   /**
@@ -261,10 +276,17 @@ class AdminController extends Plugin {
     public function disabledAction() {
         $id   = $this->get('id');
         $data = $this->adsense_data->find($id);
-        if (empty($data)) $this->adminMsg('广告不存在');
+
+        if (empty($data)) {
+            $this->adminMsg('广告不存在');
+        }
+
         $set  = $data['disabled'] ? 0 : 1;
+
         $this->adsense_data->update(array('disabled'=>$set), 'id=' . $id);
-        $this->adminMsg('操作成功', url('adsense/admin/alist', array('aid'=>$data['aid'])), 3, 1, 1);
+
+        $this->adminMsg('操作成功',true, url('adsense/admin/alist', array('aid'=>$data['aid'])));
+
     }
     
     /**
@@ -362,7 +384,7 @@ class AdminController extends Plugin {
        } 
     }
   
-     $this->adminMsg('操作成功', url('adsense/admin'), 3, 1, 1);exit();
+        return $this->adminMsg('操作成功',true, url('adsense/admin'));
    }    
      
         $this->assign(array('type' => $this->getType()));
@@ -394,11 +416,13 @@ class AdminController extends Plugin {
                $setting[$name] = $t; 
             }
         }
-        $temp['setting']   = array2string($setting);
-        $this->adsense_data->insert($temp);
+            $temp['setting']   = array2string($setting);
+            $this->adsense_data->insert($temp);
         }
-         $this->adminMsg('操作成功', url('adsense/admin'), 3, 1, 1);exit();
+
+            $this->adminMsg('操作成功', true, url('adsense/admin'));
       }
+
         $this->assign(array('type' => $this->getType()));
         $this->display('admin_flood');
     }

@@ -27,7 +27,9 @@ class TagController extends Admin {
 	                $this->delAction($id, 1);
 	            }
 	        }
-			$this->adminMsg($this->getCacheCode('tag') . lang('success'), url('admin/tag/'), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('tag') . lang('success'), true, url('admin/tag/'));
+
 	    } elseif ($this->post('submit_update') && $this->post('form') == 'update') {
 	        $data = $this->post('data');
 
@@ -40,7 +42,9 @@ class TagController extends Admin {
 				}
 			    $this->tag->update($t, 'id=' . $id);
 			}
-			$this->adminMsg($this->getCacheCode('tag') . lang('success'), url('admin/tag/'), 3, 1, 1);
+
+			$this->adminMsg($this->getCacheCode('tag') . lang('success'), true,url('admin/tag/'));
+
 	    }
 	    $page = (int)$this->get('page');
 		$page = (!$page) ? 1 : $page;
@@ -84,7 +88,7 @@ class TagController extends Admin {
             if($this->checkRepeat($data, 1, 0)) $this->adminMsg(lang('a-tag-ex-2'),url('admin/tag/add'));
 	        $data['listorder'] = intval($data['listorder']);
 			$this->db->replace('tag', $data);
-	        $this->adminMsg($this->getCacheCode('tag') . lang('success'), url('admin/tag'), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('tag') . lang('success'), true,url('admin/tag'));
 	    }
         $this->view->assign(
             array(
@@ -112,7 +116,7 @@ class TagController extends Admin {
             $data['listorder'] = intval($data['listorder']);
             if($this->checkRepeat($data, 1, $id)) $this->adminMsg(lang('a-tag-ex-2'),url('admin/tag/'));
             $this->tag->update($data, 'id=' . $id);
-	        $this->adminMsg($this->getCacheCode('tag') . lang('success'), url('admin/tag'), 3, 1, 1);
+	        $this->adminMsg($this->getCacheCode('tag') . lang('success'), true, url('admin/tag'));
 	    }
         $this->view->assign(
             array(
@@ -130,7 +134,7 @@ class TagController extends Admin {
 	    $all = $all ? $all : $this->get('all');
 		$id = $id ? $id : (int)$this->get('id');
 	    $this->tag->delete('id=' . $id);
-	    $all or $this->adminMsg($this->getCacheCode('tag') . lang('success'), url('admin/tag/index'), 3, 1, 1);
+	    $all or $this->adminMsg($this->getCacheCode('tag') . lang('success'),true, url('admin/tag/index'));
 	}
 	
 	public function importAction() {
@@ -165,8 +169,10 @@ class TagController extends Admin {
 	                $k ++;
 	            }
 	        }
-	        $this->adminMsg($this->getCacheCode('tag') . lang('a-tag-6', array('1'=>$i, '2'=>$k, '3'=>$j)), url('admin/tag/index'), 3, 1, 1);
+
+	        $this->adminMsg($this->getCacheCode('tag') . lang('a-tag-6', array('1'=>$i, '2'=>$k, '3'=>$j)),true, url('admin/tag/index'));
 	    }
+
         $this->view->assign(
             array(
                 'category' =>$this->cat
@@ -178,10 +184,12 @@ class TagController extends Admin {
 	public function cacheAction($show=0) {
 	    $qok  = $this->get('qok');
 		if ($show == 0 && !$qok) {
-            $this->adminMsg(lang('a-tag-20'), url('admin/tag/cache', array('qok'=>1)), 0, 1, 2);
+            $this->adminMsg(lang('a-tag-20'),true, url('admin/tag/cache', array('qok'=>1)));
         }
+
 	    $data = $this->tag->from(null, 'name,letter')->order('listorder DESC, id DESC')->select();
 		$list = array();
+
 		if ($data) {
 		    $cfg = Controller::load_config('config');
 		    foreach ($data as $t) {
@@ -192,7 +200,7 @@ class TagController extends Admin {
 			}
 		}
 	    $this->cache->set('tag', $list);
-	    $show or $this->adminMsg(lang('a-update'), url('admin/tag'), 3, 1, 1);
+	    $show or $this->adminMsg(lang('a-update'), true,url('admin/tag'));
 	}
 
 
